@@ -2,7 +2,7 @@
 
 Scripture Up is a forehead party game from Narrow Road Studios. One player holds the phone so the team can see a scripture reference and a short clue. Tilt the screen down for a correct guess. Tilt it up to pass.
 
-The app is free and stores everything on the phone. There are no accounts and no purchases. It runs in portrait. The bundle id is `com.narrowroad.scripture_up`. The deployment target is iOS 15, so it runs on iPhone 12 and newer.
+The app is free and stores everything on the phone. There are no accounts and no purchases. It runs in portrait. The bundle id is `com.narrowroad.scriptureup`. The deployment target is iOS 15, so it runs on iPhone 12 and newer.
 
 ## Run it on an iPhone
 
