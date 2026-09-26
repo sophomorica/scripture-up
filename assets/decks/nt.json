@@ -1,0 +1,83 @@
+{
+  "id": "nt",
+  "name": "New Testament",
+  "pitch": "Gospels, letters, and the road to Damascus.",
+  "heroColor": "#0E6B6B",
+  "emblem": "waves",
+  "format": "reference",
+  "status": "soon",
+  "cards": [
+    {
+      "id": "nt-matt-5-14",
+      "reference": "Matthew 5:14",
+      "clue": "City on a hill, you shine",
+      "difficulty": 1
+    },
+    {
+      "id": "nt-matt-5-44",
+      "reference": "Matthew 5:44",
+      "clue": "Love the people who hate you",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-matt-14-29",
+      "reference": "Matthew 14:29",
+      "clue": "Peter steps out on the sea",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-luke-2-7",
+      "reference": "Luke 2:7",
+      "clue": "Manger; no room at the inn",
+      "difficulty": 1
+    },
+    {
+      "id": "nt-luke-15-4",
+      "reference": "Luke 15:4",
+      "clue": "Leave 99, find the one",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-john-3-16",
+      "reference": "John 3:16",
+      "clue": "God so loved the world",
+      "difficulty": 1
+    },
+    {
+      "id": "nt-john-11-35",
+      "reference": "John 11:35",
+      "clue": "Two words in the King James",
+      "difficulty": 1
+    },
+    {
+      "id": "nt-john-13-34",
+      "reference": "John 13:34",
+      "clue": "New commandment: love each other",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-acts-9-3",
+      "reference": "Acts 9:3–4",
+      "clue": "Blinding light on the road",
+      "difficulty": 3
+    },
+    {
+      "id": "nt-jas-1-5",
+      "reference": "James 1:5",
+      "clue": "Lack wisdom? Just ask",
+      "difficulty": 1
+    },
+    {
+      "id": "nt-1cor-13-13",
+      "reference": "1 Corinthians 13:13",
+      "clue": "Faith, hope, and the greatest one",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-rev-3-20",
+      "reference": "Revelation 3:20",
+      "clue": "Standing at the door, knocking",
+      "difficulty": 3
+    }
+  ]
+}

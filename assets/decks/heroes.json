@@ -1,0 +1,71 @@
+{
+  "id": "heroes",
+  "name": "Heroes",
+  "pitch": "Title of liberty energy: name the hero.",
+  "heroColor": "#C0392B",
+  "emblem": "shield",
+  "format": "answer",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "hro-capt-moroni",
+      "answer": "Captain Moroni",
+      "clue": "Wrote a liberty banner on his coat",
+      "difficulty": 1
+    },
+    {
+      "id": "hro-helaman",
+      "answer": "Helaman",
+      "clue": "Led 2,000 young warriors",
+      "difficulty": 2
+    },
+    {
+      "id": "hro-ammon",
+      "answer": "Ammon",
+      "clue": "Servant who saved the king's flocks",
+      "difficulty": 1
+    },
+    {
+      "id": "hro-alma-younger",
+      "answer": "Alma the Younger",
+      "clue": "Angel stopped him cold; changed forever",
+      "difficulty": 2
+    },
+    {
+      "id": "hro-benjamin",
+      "answer": "King Benjamin",
+      "clue": "Tower speech about service",
+      "difficulty": 2
+    },
+    {
+      "id": "hro-teancum",
+      "answer": "Teancum",
+      "clue": "Javelin in the tent at night",
+      "difficulty": 3
+    },
+    {
+      "id": "hro-mormon",
+      "answer": "Mormon",
+      "clue": "Led armies as a teen; abridged it all",
+      "difficulty": 2
+    },
+    {
+      "id": "hro-abish",
+      "answer": "Abish",
+      "clue": "Servant who ran to gather the people",
+      "difficulty": 3
+    },
+    {
+      "id": "hro-lehi",
+      "answer": "Lehi",
+      "clue": "Left Jerusalem, dreamed of a tree",
+      "difficulty": 1
+    },
+    {
+      "id": "hro-bro-jared",
+      "answer": "The Brother of Jared",
+      "clue": "Saw a finger touch the stones",
+      "difficulty": 2
+    }
+  ]
+}

@@ -6,10 +6,12 @@ void main() {
   test(
     'player-facing copy keeps the product name and drops trademarked labels',
     () {
-      final sources = Directory('lib')
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((file) => file.path.endsWith('.dart'));
+      final sources = [
+        ...Directory('lib').listSync(recursive: true),
+        ...Directory('assets/decks').listSync(recursive: true),
+      ].whereType<File>().where(
+        (file) => file.path.endsWith('.dart') || file.path.endsWith('.json'),
+      );
       final text = sources.map((file) => file.readAsStringSync()).join('\n');
       final lowered = text.toLowerCase();
 

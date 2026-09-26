@@ -1,0 +1,83 @@
+{
+  "id": "parables",
+  "name": "Parables",
+  "pitch": "Stories with a twist: name the parable.",
+  "heroColor": "#66701F",
+  "emblem": "seed",
+  "format": "answer",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "par-prodigal",
+      "answer": "The Prodigal Son",
+      "clue": "Spends it all, comes home, party",
+      "difficulty": 1
+    },
+    {
+      "id": "par-samaritan",
+      "answer": "The Good Samaritan",
+      "clue": "Stranger helps the man on the road",
+      "difficulty": 1
+    },
+    {
+      "id": "par-lost-sheep",
+      "answer": "The Lost Sheep",
+      "clue": "Ninety-nine left behind",
+      "difficulty": 1
+    },
+    {
+      "id": "par-lost-coin",
+      "answer": "The Lost Coin",
+      "clue": "Sweep the house, call the neighbors",
+      "difficulty": 2
+    },
+    {
+      "id": "par-ten-virgins",
+      "answer": "The Ten Virgins",
+      "clue": "Lamps, oil, midnight wedding",
+      "difficulty": 2
+    },
+    {
+      "id": "par-talents",
+      "answer": "The Talents",
+      "clue": "Five, two, one; one buried it",
+      "difficulty": 2
+    },
+    {
+      "id": "par-sower",
+      "answer": "The Sower",
+      "clue": "Seeds on path, rocks, thorns, good ground",
+      "difficulty": 2
+    },
+    {
+      "id": "par-mustard",
+      "answer": "The Mustard Seed",
+      "clue": "Tiny start, birds nest in it",
+      "difficulty": 1
+    },
+    {
+      "id": "par-builders",
+      "answer": "The Wise and Foolish Builders",
+      "clue": "Rock vs. sand, then the flood",
+      "difficulty": 1
+    },
+    {
+      "id": "par-pearl",
+      "answer": "The Pearl of Great Price",
+      "clue": "Merchant sells everything for one",
+      "difficulty": 3
+    },
+    {
+      "id": "par-olive-tree",
+      "answer": "The Allegory of the Olive Tree",
+      "clue": "Jacob 5: grafting and pruning",
+      "difficulty": 3
+    },
+    {
+      "id": "par-laborers",
+      "answer": "The Laborers in the Vineyard",
+      "clue": "Hired at noon, same pay",
+      "difficulty": 3
+    }
+  ]
+}

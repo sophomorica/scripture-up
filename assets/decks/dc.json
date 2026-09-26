@@ -1,0 +1,77 @@
+{
+  "id": "dc",
+  "name": "Doctrine and Covenants",
+  "pitch": "Modern-day revelation, section and verse.",
+  "heroColor": "#8E2B3A",
+  "emblem": "section",
+  "format": "reference",
+  "status": "soon",
+  "cards": [
+    {
+      "id": "dc-4-2",
+      "reference": "D&C 4:2",
+      "clue": "Heart, might, mind, strength",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-6-36",
+      "reference": "D&C 6:36",
+      "clue": "Every thought, no fear",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-8-2",
+      "reference": "D&C 8:2",
+      "clue": "Told in your mind and heart",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-18-10",
+      "reference": "D&C 18:10",
+      "clue": "Souls are worth a lot",
+      "difficulty": 1
+    },
+    {
+      "id": "dc-25-12",
+      "reference": "D&C 25:12",
+      "clue": "Singing counts as praying",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-58-27",
+      "reference": "D&C 58:27",
+      "clue": "Busy doing good on your own",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-64-10",
+      "reference": "D&C 64:10",
+      "clue": "Forgive everyone, no exceptions",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-82-10",
+      "reference": "D&C 82:10",
+      "clue": "Bound by a promise",
+      "difficulty": 3
+    },
+    {
+      "id": "dc-88-118",
+      "reference": "D&C 88:118",
+      "clue": "Study plus faith",
+      "difficulty": 3
+    },
+    {
+      "id": "dc-89",
+      "reference": "D&C 89",
+      "clue": "Health code: run, not weary",
+      "difficulty": 1
+    },
+    {
+      "id": "dc-121-7",
+      "reference": "D&C 121:7–8",
+      "clue": "Hard times: only a small moment",
+      "difficulty": 3
+    }
+  ]
+}

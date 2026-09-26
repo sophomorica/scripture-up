@@ -1,0 +1,83 @@
+{
+  "id": "kids",
+  "name": "Kids",
+  "pitch": "Big pictures, easy words, lots of acting.",
+  "heroColor": "#1B76C2",
+  "emblem": "star",
+  "format": "answer",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "kid-ark",
+      "answer": "Big Boat",
+      "clue": "Act: Noah loading animals",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-rainbow",
+      "answer": "Rainbow",
+      "clue": "Colors after the rain",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-lion",
+      "answer": "Lion",
+      "clue": "Roar! Daniel's roommates",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-fish",
+      "answer": "Big Fish",
+      "clue": "Act: swallowing Jonah",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-sheep",
+      "answer": "Sheep",
+      "clue": "Baa! The shepherd finds one",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-star",
+      "answer": "Star",
+      "clue": "Wise men followed it",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-manger",
+      "answer": "Manger",
+      "clue": "Baby's bed in a stable",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-donkey",
+      "answer": "Donkey",
+      "clue": "Hee-haw! A king rode one",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-tree",
+      "answer": "Tree",
+      "clue": "Sweet white fruit in a dream",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-tower",
+      "answer": "Tower",
+      "clue": "King stood tall to talk",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-bread",
+      "answer": "Bread",
+      "clue": "Five loaves fed everyone",
+      "difficulty": 1
+    },
+    {
+      "id": "kid-boat",
+      "answer": "Ship",
+      "clue": "Nephi built one to cross the sea",
+      "difficulty": 1
+    }
+  ]
+}

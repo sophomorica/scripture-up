@@ -1,0 +1,83 @@
+{
+  "id": "ot",
+  "name": "Old Testament",
+  "pitch": "From the garden to the prophets.",
+  "heroColor": "#A4502A",
+  "emblem": "ridge",
+  "format": "reference",
+  "status": "soon",
+  "cards": [
+    {
+      "id": "ot-gen-1-1",
+      "reference": "Genesis 1:1",
+      "clue": "Day one of everything",
+      "difficulty": 1
+    },
+    {
+      "id": "ot-gen-1-27",
+      "reference": "Genesis 1:27",
+      "clue": "Made in his image",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-ex-20-3",
+      "reference": "Exodus 20:3–17",
+      "clue": "The big ten rules",
+      "difficulty": 1
+    },
+    {
+      "id": "ot-josh-24-15",
+      "reference": "Joshua 24:15",
+      "clue": "Choose today; my house serves",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-1sam-16-7",
+      "reference": "1 Samuel 16:7",
+      "clue": "Looks past appearances to the heart",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-1sam-17-49",
+      "reference": "1 Samuel 17:49",
+      "clue": "Sling, stone, giant's forehead",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-ps-23-1",
+      "reference": "Psalm 23:1",
+      "clue": "Shepherd; I lack nothing",
+      "difficulty": 1
+    },
+    {
+      "id": "ot-prov-3-5",
+      "reference": "Proverbs 3:5–6",
+      "clue": "Trust, don't lean on yourself",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-isa-1-18",
+      "reference": "Isaiah 1:18",
+      "clue": "Scarlet turned snow white",
+      "difficulty": 3
+    },
+    {
+      "id": "ot-dan-6-22",
+      "reference": "Daniel 6:22",
+      "clue": "Angel shut the lions' mouths",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-jonah-1-17",
+      "reference": "Jonah 1:17",
+      "clue": "Three days inside a fish",
+      "difficulty": 1
+    },
+    {
+      "id": "ot-mal-3-10",
+      "reference": "Malachi 3:10",
+      "clue": "Windows of heaven open",
+      "difficulty": 3
+    }
+  ]
+}

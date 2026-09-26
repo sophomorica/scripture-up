@@ -1,0 +1,83 @@
+{
+  "id": "hard",
+  "name": "Hard Mode",
+  "pitch": "Name the exact reference from any book.",
+  "heroColor": "#15161A",
+  "emblem": "colon",
+  "format": "reference",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "hrd-2ne-31-20",
+      "reference": "2 Nephi 31:20",
+      "clue": "Press forward, steadfast",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-2ne-32-3",
+      "reference": "2 Nephi 32:3",
+      "clue": "Feast on his words",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-mosiah-3-19",
+      "reference": "Mosiah 3:19",
+      "clue": "Put off the natural man",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-alma-34-32",
+      "reference": "Alma 34:32",
+      "clue": "This life: time to prepare",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-alma-41-10",
+      "reference": "Alma 41:10",
+      "clue": "Wickedness never was happiness",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-ether-12-6",
+      "reference": "Ether 12:6",
+      "clue": "Witness comes after the trial",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-moroni-7-45",
+      "reference": "Moroni 7:45",
+      "clue": "Charity suffers long, is kind",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-josh-1-9",
+      "reference": "Joshua 1:9",
+      "clue": "Strong, courageous, not dismayed",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-isa-53-4",
+      "reference": "Isaiah 53:4–5",
+      "clue": "Carried our griefs and sorrows",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-matt-11-28",
+      "reference": "Matthew 11:28–30",
+      "clue": "Come, weary ones; easy yoke",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-john-14-15",
+      "reference": "John 14:15",
+      "clue": "Love me? Keep my commandments",
+      "difficulty": 3
+    },
+    {
+      "id": "hrd-dc-18-15",
+      "reference": "D&C 18:15–16",
+      "clue": "Joy over even one soul",
+      "difficulty": 3
+    }
+  ]
+}

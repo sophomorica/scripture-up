@@ -1,15 +1,25 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 
-import '../game/game_session.dart';
-import '../game/round_engine.dart';
-import '../game/scripture_card.dart';
-import '../game/tilt.dart';
+import '../feedback/game_audio.dart';
+import '../feedback/game_haptics.dart';
+import '../game/deck.dart';
+import '../game/round_controller.dart';
+import '../game/tilt_sensor.dart';
+import '../recording/clip_session.dart';
+import '../recording/moments.dart';
 import '../recording/recording_store.dart';
 import '../recording/round_recorder.dart';
-import 'theme.dart';
+import '../store/bests.dart';
+import 'results_view.dart';
+import 'review_screen.dart';
+import 'round_views.dart';
 
 class RoundScreen extends StatefulWidget {
   const RoundScreen({
@@ -17,9 +27,15 @@ class RoundScreen extends StatefulWidget {
     required this.deck,
     required this.length,
     required this.store,
+    required this.bests,
     required this.recorderFactory,
-    required this.tilt,
-    this.countdown = const Duration(seconds: 3),
+    required this.sensor,
+    required this.audio,
+    required this.haptics,
+    required this.now,
+    this.roundNumber = 1,
+    this.tapMode = false,
+    this.record = false,
     this.random,
     this.clock,
   });
@@ -27,60 +43,234 @@ class RoundScreen extends StatefulWidget {
   final Deck deck;
   final Duration length;
   final RecordingStore store;
+  final BestStore bests;
   final RoundRecorder Function() recorderFactory;
-  final Stream<TiltReading>? tilt;
-  final Duration countdown;
-  final Random? random;
+  final TiltSensor sensor;
+  final GameAudio audio;
+  final GameHaptics haptics;
+  final Duration Function() now;
+  final int roundNumber;
+  final bool tapMode;
+  final bool record;
+  final Random Function()? random;
   final DateTime Function()? clock;
 
   @override
   State<RoundScreen> createState() => _RoundScreenState();
 }
 
-class _RoundScreenState extends State<RoundScreen> {
-  late final GameSession _session;
+class _RoundScreenState extends State<RoundScreen>
+    with SingleTickerProviderStateMixin {
+  late RoundController _round;
+  late ClipSession _clips;
+  late final Ticker _ticker;
+  StreamSubscription<AccelSample>? _samples;
+  var _roundNumber = 1;
+  var _recordingStarted = false;
+  var _recordingFinished = false;
+  var _bestWritten = false;
   var _leaving = false;
+  int? _expanded;
 
   @override
   void initState() {
     super.initState();
-    _session = GameSession(
-      cards: widget.deck.cards,
-      length: widget.length,
-      recorderFactory: widget.recorderFactory,
-      store: widget.store,
-      tilt: widget.tilt,
-      random: widget.random,
-      clock: widget.clock,
-      countdown: widget.countdown,
-    );
-    _session.addListener(_onSession);
-    unawaited(_session.start());
+    SystemChrome.setPreferredOrientations(const [
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    _roundNumber = widget.roundNumber;
+    _clips = _openClips();
+    _boot(const {});
+    _ticker = createTicker((_) => _round.elapseTo(widget.now()))..start();
+    _samples = widget.sensor.samples.listen((sample) {
+      _round.sample(AccelSample(sample.x, sample.y, sample.z, widget.now()));
+    });
   }
 
-  void _onSession() {
+  ClipSession _openClips() {
+    final session = ClipSession(
+      recorderFactory: widget.recorderFactory,
+      store: widget.store,
+      clock: widget.clock,
+    );
+    session.addListener(_onClip);
+    return session;
+  }
+
+  void _boot(Set<String> unseen) {
+    _round = RoundController(
+      deck: widget.deck,
+      length: widget.length,
+      roundNumber: _roundNumber,
+      tapMode: widget.tapMode,
+      priorBest: widget.bests.read(widget.deck.id, widget.length.inSeconds),
+      unseenFirst: unseen,
+      random: widget.random?.call(),
+    );
+    _round.addListener(_onRound);
+    _expanded = null;
+    _recordingStarted = false;
+    _recordingFinished = false;
+    _bestWritten = false;
+  }
+
+  void _onRound() {
+    _playCues();
+    _syncRecording();
+    _writeBest();
     if (mounted) {
       setState(() {});
     }
   }
 
+  void _onClip() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _playCues() {
+    for (final cue in _round.drainCues()) {
+      final sound = cue.sound;
+      if (sound != null) {
+        unawaited(widget.audio.play(sound));
+      }
+      final haptic = cue.haptic;
+      if (haptic != null) {
+        widget.haptics.play(haptic);
+      }
+    }
+  }
+
+  void _syncRecording() {
+    if (!widget.record) {
+      return;
+    }
+    if (!_recordingStarted && _round.phase == RoundPhase.countdown) {
+      _recordingStarted = true;
+      unawaited(_clips.begin());
+    }
+    final stop =
+        _recordingStarted &&
+        !_recordingFinished &&
+        (_round.phase == RoundPhase.results ||
+            (_round.phase == RoundPhase.timeUp &&
+                _round.timeUpElapsed >= const Duration(milliseconds: 1500)));
+    if (stop) {
+      _recordingFinished = true;
+      unawaited(_clips.finish());
+    }
+  }
+
+  void _writeBest() {
+    if (_bestWritten || _round.phase != RoundPhase.results) {
+      return;
+    }
+    _bestWritten = true;
+    unawaited(
+      widget.bests.write(
+        widget.deck.id,
+        widget.length.inSeconds,
+        _round.got,
+      ),
+    );
+  }
+
   @override
   void dispose() {
-    _session.removeListener(_onSession);
-    unawaited(_session.leaveRound());
-    _session.dispose();
+    _ticker.dispose();
+    unawaited(_samples?.cancel() ?? Future<void>.value());
+    _round.removeListener(_onRound);
+    _round.dispose();
+    _clips.removeListener(_onClip);
+    if (!_leaving) {
+      unawaited(_clips.abandon());
+    }
+    _clips.dispose();
+    SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
     super.dispose();
   }
 
-  Future<void> _leave() async {
+  bool get _hasFile =>
+      _clips.clip is ClipPending || _clips.clip is ClipSaved;
+
+  File? get _clipFile {
+    final clip = _clips.clip;
+    return switch (clip) {
+      ClipPending(:final file) => file,
+      ClipSaved(:final file) => file,
+      _ => null,
+    };
+  }
+
+  Future<void> _playAgain() async {
+    final unseen = _round.unseenIds;
+    await _clips.abandon();
+    _round.removeListener(_onRound);
+    _round.dispose();
+    _clips.removeListener(_onClip);
+    _clips.dispose();
+    _clips = _openClips();
+    setState(() {
+      _roundNumber += 1;
+      _boot(unseen);
+    });
+  }
+
+  Future<void> _leave({required bool home}) async {
     if (_leaving) {
       return;
     }
-    setState(() => _leaving = true);
-    await _session.leaveRound();
-    if (mounted) {
-      Navigator.of(context).pop();
+    if (_round.phase == RoundPhase.results && _clips.clip is ClipPending) {
+      final keep = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Keep this video?'),
+            content: const Text('Save it on this phone, or delete it.'),
+            actions: [
+              TextButton(
+                key: const Key('confirm-delete'),
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Delete'),
+              ),
+              TextButton(
+                key: const Key('confirm-save'),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+      if (keep == null || !mounted) {
+        return;
+      }
+      if (keep) {
+        await _save();
+      } else {
+        await _clips.delete();
+      }
     }
+    _leaving = true;
+    if (mounted) {
+      Navigator.of(context).pop(home);
+    }
+  }
+
+  Future<void> _save() async {
+    await _clips.save();
+    final file = _clipFile;
+    if (file == null) {
+      return;
+    }
+    final sidecar = File(file.path.replaceAll('.mp4', '.json'));
+    sidecar.writeAsStringSync(
+      jsonEncode({
+        'marks': [for (final mark in _round.marks) mark.toJson()],
+      }),
+    );
   }
 
   Future<void> _deleteClip() async {
@@ -105,437 +295,161 @@ class _RoundScreenState extends State<RoundScreen> {
       },
     );
     if (discard == true) {
-      await _session.deleteRecording();
+      await _clips.delete();
     }
+  }
+
+  Future<void> _watch(Duration seek) async {
+    final file = _clipFile;
+    if (file == null) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ReviewScreen(
+          file: file,
+          marks: _round.marks,
+          initialSeek: seek,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final phase = _session.phase;
+    final reduce = MediaQuery.disableAnimationsOf(context);
     return PopScope(
       canPop: _leaving,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) {
-          unawaited(_leave());
+          unawaited(_leave(home: true));
         }
       },
-      child: switch (phase) {
-        null => const Scaffold(backgroundColor: night, body: SizedBox.expand()),
-        RoundFinished() => _ResultsBody(
-          session: _session,
-          onAgain: () => unawaited(_session.playAgain()),
-          onDeck: _leave,
-          onDelete: _deleteClip,
-        ),
-        _ => _ForeheadBody(session: _session, onEnd: () => unawaited(_leave())),
-      },
-    );
-  }
-}
-
-class _ForeheadBody extends StatelessWidget {
-  const _ForeheadBody({required this.session, required this.onEnd});
-
-  final GameSession session;
-  final VoidCallback onEnd;
-
-  @override
-  Widget build(BuildContext context) {
-    final phase = session.phase;
-    final playing = phase is RoundPlaying ? phase : null;
-    final countdown = phase is RoundCountdown ? phase : null;
-    return Scaffold(
-      backgroundColor: night,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    playing == null ? '' : formatClock(playing.timeLeft),
-                    key: const Key('round-clock'),
-                    style: const TextStyle(
-                      color: amber,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                  const Spacer(),
-                  if (playing != null)
-                    Text(
-                      '${playing.correct.length} got',
-                      style: const TextStyle(
-                        color: sand,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  TextButton(
-                    key: const Key('end-round'),
-                    onPressed: onEnd,
-                    child: const Text(
-                      'End',
-                      style: TextStyle(
-                        color: sand,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              if (session.clip is ClipUnavailable)
-                const Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Not recording',
-                    style: TextStyle(color: sand, fontSize: 14),
-                  ),
-                ),
-              Expanded(
-                child: countdown != null
-                    ? Center(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            '${countdownNumber(countdown.left)}',
-                            key: const Key('countdown'),
-                            style: const TextStyle(
-                              color: ivory,
-                              fontSize: 160,
-                              fontWeight: FontWeight.w800,
-                              height: 1,
-                            ),
-                          ),
-                        ),
-                      )
-                    : _CardFace(card: playing!.current, banner: session.banner),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: _RoundButton(
-                      key: const Key('pass'),
-                      label: 'Pass',
-                      color: clay,
-                      onPressed: session.markPass,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _RoundButton(
-                      key: const Key('got-it'),
-                      label: 'Got it',
-                      color: moss,
-                      onPressed: session.markCorrect,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: SizedBox.expand(child: _body(reduce)),
       ),
     );
   }
-}
 
-class _CardFace extends StatelessWidget {
-  const _CardFace({required this.card, required this.banner});
-
-  final ScriptureCard card;
-  final String? banner;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (banner != null) ...[
-          Text(
-            banner!,
-            key: const Key('round-banner'),
-            style: const TextStyle(
-              color: amber,
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 12),
-        ],
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            card.reference,
-            key: const Key('card-reference'),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: ivory,
-              fontSize: 56,
-              fontWeight: FontWeight.w800,
-              height: 1.05,
-              letterSpacing: -0.8,
-            ),
-          ),
-        ),
-        const SizedBox(height: 18),
-        Text(
-          'CLUE',
-          style: TextStyle(
-            color: sand.withValues(alpha: 0.8),
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.4,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          card.clue,
-          key: const Key('card-clue'),
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: sand,
-            fontSize: 22,
-            height: 1.25,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RoundButton extends StatelessWidget {
-  const _RoundButton({
-    super.key,
-    required this.label,
-    required this.color,
-    required this.onPressed,
-  });
-
-  final String label;
-  final Color color;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: onPressed,
-      style: FilledButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: ivory,
-        minimumSize: const Size.fromHeight(64),
-        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+  Widget _body(bool reduce) {
+    final phase = _round.phase;
+    final card = _round.current;
+    return switch (phase) {
+      RoundPhase.idle => ForeheadView(
+        roundNumber: _roundNumber,
+        armProgress: _round.armProgress,
+        tapMode: widget.tapMode,
+        recording: _clips.live,
+        onStart: _round.tapStart,
       ),
-      child: Text(label),
-    );
-  }
-}
-
-class _ResultsBody extends StatelessWidget {
-  const _ResultsBody({
-    required this.session,
-    required this.onAgain,
-    required this.onDeck,
-    required this.onDelete,
-  });
-
-  final GameSession session;
-  final VoidCallback onAgain;
-  final VoidCallback onDeck;
-  final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final phase = session.phase! as RoundFinished;
-    return Scaffold(
-      backgroundColor: paper,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-          children: [
-            Text(
-              '${phase.correct.length}',
-              style: const TextStyle(
-                fontSize: 72,
-                fontWeight: FontWeight.w800,
-                color: pine,
-                height: 0.95,
-              ),
-            ),
-            const Text(
-              'correct',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: moss,
-              ),
-            ),
-            if (phase.deckCleared) ...[
-              const SizedBox(height: 8),
-              const Text('You cleared the deck.'),
-            ],
-            const SizedBox(height: 20),
-            _OutcomeList(
-              title: 'Got it',
-              listKey: const Key('got-list'),
-              cards: phase.correct,
-              empty: 'No correct guesses',
-            ),
-            const SizedBox(height: 16),
-            _OutcomeList(
-              title: 'Passed',
-              listKey: const Key('passed-list'),
-              cards: phase.passed,
-              empty: 'No passes',
-            ),
-            const SizedBox(height: 20),
-            _ClipPanel(session: session, onDelete: onDelete),
-            const SizedBox(height: 16),
-            FilledButton(
-              key: const Key('play-again'),
-              onPressed: onAgain,
-              style: FilledButton.styleFrom(
-                backgroundColor: pine,
-                foregroundColor: ivory,
-                minimumSize: const Size.fromHeight(56),
-              ),
-              child: const Text('Play again'),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              key: const Key('change-deck'),
-              onPressed: onDeck,
-              child: const Text('Change deck'),
-            ),
-          ],
-        ),
+      RoundPhase.countdown => CountdownView(
+        roundNumber: _roundNumber,
+        numeral: _round.numeral,
+        progress: _round.beatProgress,
+        recording: _clips.live,
       ),
-    );
-  }
-}
-
-class _OutcomeList extends StatelessWidget {
-  const _OutcomeList({
-    required this.title,
-    required this.listKey,
-    required this.cards,
-    required this.empty,
-  });
-
-  final String title;
-  final Key listKey;
-  final List<ScriptureCard> cards;
-  final String empty;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: listKey,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: line),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      RoundPhase.card || RoundPhase.paused => Stack(
+        fit: StackFit.expand,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          CardPlayView(
+            color: widget.deck.hero,
+            prompt: card?.prompt ?? '',
+            clue: card?.clue ?? '',
+            got: _round.got,
+            timeLeft: _round.timeLeft,
+            deckName: widget.deck.name,
+            recording: _clips.live,
+            tapMode: widget.tapMode,
+            urgent: _round.urgent,
+            urgentFast: _round.urgentFast,
+            pauseProgress: _round.pauseProgress,
+            reduceMotion: reduce,
+            onCorrect: _round.tapCorrect,
+            onPass: _round.tapPass,
+            onPauseDown: _round.beginPauseHold,
+            onPauseUp: _round.cancelPauseHold,
           ),
-          const SizedBox(height: 8),
-          if (cards.isEmpty)
-            Text(empty, style: TextStyle(color: ink.withValues(alpha: 0.6)))
-          else
-            for (final card in cards)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text(
-                  card.reference,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+          if (phase == RoundPhase.paused)
+            PauseScrim(onResume: _round.resume, onEnd: _round.endEarly),
         ],
       ),
-    );
-  }
-}
-
-class _ClipPanel extends StatelessWidget {
-  const _ClipPanel({required this.session, required this.onDelete});
-
-  final GameSession session;
-  final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final clip = session.clip;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: foam,
-        borderRadius: BorderRadius.circular(16),
+      RoundPhase.correct => CorrectFlashView(
+        prompt: card?.prompt ?? '',
+        timeLeft: _round.timeLeft,
+        reduceMotion: reduce,
       ),
-      child: switch (clip) {
-        ClipOff() => const Text('Finishing the recording…'),
-        ClipUnavailable(:final reason) => Text(reason),
-        ClipPending() => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              'Keep this round on the phone, or wipe it.',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            FilledButton(
-              key: const Key('save-recording'),
-              onPressed: () => unawaited(session.saveRecording()),
-              style: FilledButton.styleFrom(
-                backgroundColor: moss,
-                foregroundColor: ivory,
-                minimumSize: const Size.fromHeight(52),
-              ),
-              child: const Text('Save recording'),
-            ),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              key: const Key('delete-recording'),
-              onPressed: onDelete,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: clay,
-                minimumSize: const Size.fromHeight(52),
-                side: const BorderSide(color: clay),
-              ),
-              child: const Text('Delete recording'),
-            ),
-          ],
-        ),
-        ClipSaved() => const Text(
-          'Saved on this phone',
-          key: Key('clip-saved'),
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-            fontSize: 18,
-            color: pine,
-          ),
-        ),
-        ClipDeleted() => const Text(
-          'Recording deleted',
-          key: Key('clip-deleted'),
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
-        ),
-      },
-    );
+      RoundPhase.pass => PassFlashView(
+        prompt: card?.prompt ?? '',
+        timeLeft: _round.timeLeft,
+      ),
+      RoundPhase.timeUp => TimeUpView(
+        headline: _round.headline,
+        score: _round.got,
+      ),
+      RoundPhase.results => ResultsView(
+        headline: _round.headline,
+        score: _round.got,
+        deckName: widget.deck.name,
+        seconds: widget.length.inSeconds,
+        passed: _round.passed,
+        bestLabel: _round.bestLabel,
+        newBest: _round.newBest,
+        marks: _round.marks,
+        expanded: _expanded,
+        hasRecording: _hasFile,
+        reduceMotion: reduce,
+        onToggle: (index) {
+          setState(() => _expanded = _expanded == index ? null : index);
+        },
+        onJump: (mark) => _watch(jumpTarget(mark.tMs)),
+        onPlayAgain: () => unawaited(_playAgain()),
+        onNewDeck: () => unawaited(_leave(home: false)),
+        onHome: () => unawaited(_leave(home: true)),
+        recording: _strip(),
+      ),
+    };
+  }
+
+  Widget _strip() {
+    if (!widget.record && _clips.clip is ClipOff) {
+      return const SizedBox.shrink();
+    }
+    final clip = _clips.clip;
+    return switch (clip) {
+      ClipOff() => RecordingStrip(
+        label: 'Starting the camera…',
+        onWatch: null,
+        onSave: null,
+        onDelete: null,
+      ),
+      ClipUnavailable(:final reason) => RecordingStrip(
+        label: reason,
+        onWatch: null,
+        onSave: null,
+        onDelete: null,
+      ),
+      ClipPending() => RecordingStrip(
+        label: 'Round video · stays on this phone',
+        canSave: true,
+        canDelete: true,
+        onWatch: () => unawaited(_watch(Duration.zero)),
+        onSave: () => unawaited(_save()),
+        onDelete: () => unawaited(_deleteClip()),
+      ),
+      ClipSaved() => RecordingStrip(
+        label: 'Saved on this phone',
+        canDelete: true,
+        onWatch: () => unawaited(_watch(Duration.zero)),
+        onSave: null,
+        onDelete: () => unawaited(_deleteClip()),
+      ),
+      ClipDeleted() => RecordingStrip(
+        label: 'Recording deleted',
+        onWatch: null,
+        onSave: null,
+        onDelete: null,
+      ),
+    };
   }
 }
-
-const amber = Color(0xFFE6A15C);

@@ -1,0 +1,83 @@
+{
+  "id": "stories",
+  "name": "Stories",
+  "pitch": "Act out the big scenes.",
+  "heroColor": "#7A4A1E",
+  "emblem": "scene",
+  "format": "answer",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "sty-lehis-dream",
+      "answer": "Lehi's Dream",
+      "clue": "Tree, rod, spacious building",
+      "difficulty": 2
+    },
+    {
+      "id": "sty-bro-jared",
+      "answer": "The Brother of Jared's Stones",
+      "clue": "Sixteen, touched by a finger, glow",
+      "difficulty": 3
+    },
+    {
+      "id": "sty-david-goliath",
+      "answer": "David and Goliath",
+      "clue": "Shepherd boy vs. giant",
+      "difficulty": 1
+    },
+    {
+      "id": "sty-red-sea",
+      "answer": "Parting the Red Sea",
+      "clue": "Walls of water, dry ground",
+      "difficulty": 1
+    },
+    {
+      "id": "sty-handwriting",
+      "answer": "Handwriting on the Wall",
+      "clue": "Mystery message at a king's feast",
+      "difficulty": 3
+    },
+    {
+      "id": "sty-5000",
+      "answer": "Feeding the Five Thousand",
+      "clue": "Loaves and fishes for a crowd",
+      "difficulty": 1
+    },
+    {
+      "id": "sty-stripling",
+      "answer": "The Stripling Warriors",
+      "clue": "2,000 young soldiers, faithful mothers",
+      "difficulty": 2
+    },
+    {
+      "id": "sty-sebus",
+      "answer": "Ammon Defends the Flocks",
+      "clue": "Guarding the king's sheep at the water",
+      "difficulty": 2
+    },
+    {
+      "id": "sty-broken-bow",
+      "answer": "Nephi's Broken Bow",
+      "clue": "Steel snaps; he makes one of wood",
+      "difficulty": 2
+    },
+    {
+      "id": "sty-jericho",
+      "answer": "Walls of Jericho",
+      "clue": "March, trumpets, shout, it all falls",
+      "difficulty": 1
+    },
+    {
+      "id": "sty-jonah",
+      "answer": "Jonah and the Great Fish",
+      "clue": "Swallowed, three days, spat out",
+      "difficulty": 1
+    },
+    {
+      "id": "sty-3ne-visit",
+      "answer": "Christ Visits the Nephites",
+      "clue": "Voice from heaven at Bountiful",
+      "difficulty": 2
+    }
+  ]
+}
