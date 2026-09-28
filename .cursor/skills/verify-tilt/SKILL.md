@@ -2,7 +2,7 @@
 
 Tilt is `TiltDetector` behind `TiltSensor`. Widget tests do not need a phone. Device proof does.
 
-## On this machine
+## From the checkout
 
 ```bash
 flutter test test/tilt_test.dart test/round_controller_test.dart
@@ -18,9 +18,9 @@ Those tests must show:
 
 ## On an iPhone
 
-This Linux environment has no iPhone and no simulator, so no tilt video was recorded. On a Mac:
+The repo is https://github.com/sophomorica/scripture-up. On a Mac with Xcode and Flutter stable:
 
-1. Connect an iPhone 12 or newer. Run `flutter run -d <device-id>` from this directory.
+1. Clone that repo. Connect an iPhone 12 or newer. Run `flutter run -d <device-id>` from the checkout.
 2. On the lobby, tap PLAY on Book of Mormon. Leave Tilt selected. Leave Record the team off. Tap PLAY.
 3. Rotate to landscape. Hold the phone on your forehead, screen toward the team, until the countdown starts by itself.
 4. On a card, tilt the screen down (toward the floor) past about 50 degrees and hold it there for a moment. The gold Got it flash should show, then the next card should wait.

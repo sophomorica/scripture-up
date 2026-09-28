@@ -1,6 +1,6 @@
 # Feature map
 
-Scripture Up 1.1.0+3. Portrait lobby, landscape round. Bundle id `com.narrowroad.scriptureup`. Team `JQ7J89B22A`. Neither changed in this redesign.
+The repo is https://github.com/sophomorica/scripture-up. Scripture Up 1.1.0+3. Portrait lobby, landscape round. Bundle id `com.narrowroad.scriptureup`. Team `JQ7J89B22A`.
 
 ## Screens
 
@@ -35,4 +35,4 @@ Scripture Up 1.1.0+3. Portrait lobby, landscape round. Bundle id `com.narrowroad
 
 - `flutter analyze` is clean.
 - `flutter test` covers tilt fixtures, the round controller, clip save/delete, each screen, and writes `artifacts/screens/*.png`.
-- Linux cannot record the phone. Device steps are in `.cursor/skills/verify-tilt/SKILL.md`.
+- Device steps are in `.cursor/skills/verify-tilt/SKILL.md`.
