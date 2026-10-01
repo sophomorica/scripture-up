@@ -10,10 +10,11 @@ Version 1.1.0+3 is the deck-first redesign. Book of Mormon is the only live deck
 
 Use a Mac with Xcode and Flutter stable. This project was built with Flutter 3.47.5.
 
-1. Connect an iPhone 12 or newer, or boot an iPhone 12 simulator.
-2. In this directory, run `flutter pub get`.
-3. Run `flutter devices` and copy the device id.
-4. Run `flutter run -d <device-id>`.
+1. Clone https://github.com/sophomorica/scripture-up and open that directory.
+2. Connect an iPhone 12 or newer, or boot an iPhone 12 simulator.
+3. Run `flutter pub get`.
+4. Run `flutter devices` and copy the device id.
+5. Run `flutter run -d <device-id>`.
 
 The first launch asks for the camera and the microphone only if Record the team is on. That switch is off until you turn it on in the deck sheet. If the camera cannot start, the round still plays.
 
@@ -40,7 +41,7 @@ Run `flutter analyze` and `flutter test`.
 
 The tests cover the tilt threshold, hold, return-to-level, and tap fallback; the round clock; personal best; save, delete, and a camera that never starts; and each screen at phone size. Screenshot PNGs of the screens are written to `artifacts/screens/` by `test/screenshot_test.dart`.
 
-This environment is Linux and cannot launch an iPhone, so it cannot record a tilt-loop video. The device steps are in `.cursor/skills/verify-tilt/SKILL.md`.
+Device steps are in `.cursor/skills/verify-tilt/SKILL.md`.
 
 Fraunces and Barlow are bundled under the SIL Open Font License. The sounds in `assets/sounds/` are short original tones.
 

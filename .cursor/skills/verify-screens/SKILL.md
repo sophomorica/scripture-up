@@ -1,6 +1,6 @@
 # Verify screens
 
-Each screen has a widget test and a PNG under `artifacts/screens/`. The source mock PNGs were not in the repo, so the renders stand on their own.
+The repo is https://github.com/sophomorica/scripture-up. Each screen has a widget test and a PNG under `artifacts/screens/`.
 
 ## Commands
 
