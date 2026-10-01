@@ -1,0 +1,77 @@
+{
+  "id": "objects",
+  "name": "Objects",
+  "pitch": "Rods, balls, slings, and seeds: name the thing.",
+  "heroColor": "#3F5566",
+  "emblem": "ball",
+  "format": "answer",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "obj-liahona",
+      "answer": "Liahona",
+      "clue": "Ball of curious workmanship",
+      "difficulty": 2
+    },
+    {
+      "id": "obj-iron-rod",
+      "answer": "Iron Rod",
+      "clue": "Hold on through the mist",
+      "difficulty": 1
+    },
+    {
+      "id": "obj-mustard",
+      "answer": "Mustard Seed",
+      "clue": "Smallest start, grows huge",
+      "difficulty": 1
+    },
+    {
+      "id": "obj-brass-plates",
+      "answer": "Brass Plates",
+      "clue": "Laban had them; Nephi went back",
+      "difficulty": 2
+    },
+    {
+      "id": "obj-title-lib",
+      "answer": "Title of Liberty",
+      "clue": "Torn coat raised on a pole",
+      "difficulty": 2
+    },
+    {
+      "id": "obj-ark",
+      "answer": "Noah's Ark",
+      "clue": "Gopher wood, two by two",
+      "difficulty": 1
+    },
+    {
+      "id": "obj-sling",
+      "answer": "Sling",
+      "clue": "David's giant-stopper",
+      "difficulty": 1
+    },
+    {
+      "id": "obj-coat",
+      "answer": "Coat of Many Colours",
+      "clue": "Jealous brothers' favorite target",
+      "difficulty": 1
+    },
+    {
+      "id": "obj-burning-bush",
+      "answer": "Burning Bush",
+      "clue": "On fire, never consumed",
+      "difficulty": 1
+    },
+    {
+      "id": "obj-sword-laban",
+      "answer": "Sword of Laban",
+      "clue": "Blade of precious steel",
+      "difficulty": 2
+    },
+    {
+      "id": "obj-lamp-oil",
+      "answer": "Lamp and Oil",
+      "clue": "Five were ready, five weren't",
+      "difficulty": 2
+    }
+  ]
+}

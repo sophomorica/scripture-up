@@ -1,0 +1,83 @@
+{
+  "id": "people",
+  "name": "People",
+  "pitch": "Prophets, queens, fishermen: guess who.",
+  "heroColor": "#B0386A",
+  "emblem": "person",
+  "format": "answer",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "ppl-nephi",
+      "answer": "Nephi",
+      "clue": "Built a ship; 'I will go and do'",
+      "difficulty": 1
+    },
+    {
+      "id": "ppl-moroni",
+      "answer": "Moroni",
+      "clue": "Last writer; buried the record",
+      "difficulty": 2
+    },
+    {
+      "id": "ppl-esther",
+      "answer": "Esther",
+      "clue": "Queen 'for such a time as this'",
+      "difficulty": 2
+    },
+    {
+      "id": "ppl-daniel",
+      "answer": "Daniel",
+      "clue": "Survived a night with lions",
+      "difficulty": 1
+    },
+    {
+      "id": "ppl-noah",
+      "answer": "Noah",
+      "clue": "Ark, animals, rainbow",
+      "difficulty": 1
+    },
+    {
+      "id": "ppl-moses",
+      "answer": "Moses",
+      "clue": "Parted the Red Sea",
+      "difficulty": 1
+    },
+    {
+      "id": "ppl-ruth",
+      "answer": "Ruth",
+      "clue": "'Whither thou goest, I will go'",
+      "difficulty": 2
+    },
+    {
+      "id": "ppl-peter",
+      "answer": "Peter",
+      "clue": "Fisherman who walked on water, briefly",
+      "difficulty": 1
+    },
+    {
+      "id": "ppl-mary-mag",
+      "answer": "Mary Magdalene",
+      "clue": "First to see him risen at the tomb",
+      "difficulty": 3
+    },
+    {
+      "id": "ppl-abinadi",
+      "answer": "Abinadi",
+      "clue": "Stood up to King Noah",
+      "difficulty": 2
+    },
+    {
+      "id": "ppl-samuel-lam",
+      "answer": "Samuel the Lamanite",
+      "clue": "Preached from the city wall",
+      "difficulty": 2
+    },
+    {
+      "id": "ppl-joseph-egypt",
+      "answer": "Joseph of Egypt",
+      "clue": "Colorful coat; dream reader",
+      "difficulty": 1
+    }
+  ]
+}

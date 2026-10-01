@@ -1,0 +1,83 @@
+{
+  "id": "places",
+  "name": "Places",
+  "pitch": "Cities, seas, and wildernesses: name the place.",
+  "heroColor": "#2F6B3A",
+  "emblem": "compass",
+  "format": "answer",
+  "status": "proposed",
+  "cards": [
+    {
+      "id": "plc-jerusalem",
+      "answer": "Jerusalem",
+      "clue": "Lehi's family left it",
+      "difficulty": 1
+    },
+    {
+      "id": "plc-zarahemla",
+      "answer": "Zarahemla",
+      "clue": "Major Nephite city and land",
+      "difficulty": 2
+    },
+    {
+      "id": "plc-bountiful",
+      "answer": "Bountiful",
+      "clue": "Seaside land where Nephi built a ship",
+      "difficulty": 2
+    },
+    {
+      "id": "plc-eden",
+      "answer": "Garden of Eden",
+      "clue": "First home, forbidden fruit",
+      "difficulty": 1
+    },
+    {
+      "id": "plc-bethlehem",
+      "answer": "Bethlehem",
+      "clue": "Little town, manger birth",
+      "difficulty": 1
+    },
+    {
+      "id": "plc-nazareth",
+      "answer": "Nazareth",
+      "clue": "Jesus grew up here",
+      "difficulty": 2
+    },
+    {
+      "id": "plc-galilee",
+      "answer": "Sea of Galilee",
+      "clue": "Peter's fishing water",
+      "difficulty": 2
+    },
+    {
+      "id": "plc-sinai",
+      "answer": "Mount Sinai",
+      "clue": "Moses got the commandments here",
+      "difficulty": 2
+    },
+    {
+      "id": "plc-egypt",
+      "answer": "Egypt",
+      "clue": "Pharaoh and ten plagues",
+      "difficulty": 1
+    },
+    {
+      "id": "plc-babylon",
+      "answer": "Babylon",
+      "clue": "Daniel served its king",
+      "difficulty": 2
+    },
+    {
+      "id": "plc-mormon-waters",
+      "answer": "Waters of Mormon",
+      "clue": "Alma baptized in secret here",
+      "difficulty": 3
+    },
+    {
+      "id": "plc-nineveh",
+      "answer": "Nineveh",
+      "clue": "The city Jonah ran from",
+      "difficulty": 2
+    }
+  ]
+}

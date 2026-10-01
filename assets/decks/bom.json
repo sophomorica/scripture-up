@@ -1,0 +1,119 @@
+{
+  "id": "bom",
+  "name": "Book of Mormon",
+  "pitch": "The live deck: say the reference from your team's clue.",
+  "heroColor": "#1F4BA5",
+  "emblem": "plates",
+  "format": "reference",
+  "status": "live",
+  "cards": [
+    {
+      "id": "bom-1ne-3-7",
+      "reference": "1 Nephi 3:7",
+      "clue": "I will go and do",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-1ne-1-1",
+      "reference": "1 Nephi 1:1",
+      "clue": "Born of goodly parents",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-2ne-2-25",
+      "reference": "2 Nephi 2:25",
+      "clue": "That they might have joy",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-2ne-9-28",
+      "reference": "2 Nephi 9:28",
+      "clue": "Learned, yet not wise",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-mos-2-17",
+      "reference": "Mosiah 2:17",
+      "clue": "Service to other people",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-alma-32-21",
+      "reference": "Alma 32:21",
+      "clue": "Hope in what is not seen",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-alma-37-6",
+      "reference": "Alma 37:6",
+      "clue": "Small and simple things",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-hel-5-12",
+      "reference": "Helaman 5:12",
+      "clue": "A foundation on the rock",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-3ne-11-10",
+      "reference": "3 Nephi 11:10",
+      "clue": "He speaks his own name",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-ether-12-27",
+      "reference": "Ether 12:27",
+      "clue": "Weakness made strong",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-moro-10-4",
+      "reference": "Moroni 10:4",
+      "clue": "Ask if it is true",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-1ne-16-10",
+      "reference": "1 Nephi 16:10",
+      "clue": "A ball of curious workmanship",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-mos-3-19",
+      "reference": "Mosiah 3:19",
+      "clue": "Yield like a child",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-alma-7-11",
+      "reference": "Alma 7:11",
+      "clue": "Pains and sicknesses",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-2ne-31-20",
+      "reference": "2 Nephi 31:20",
+      "clue": "Press forward",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-moro-7-47",
+      "reference": "Moroni 7:47",
+      "clue": "Pure love",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-enos-1-4",
+      "reference": "Enos 1:4",
+      "clue": "A wrestle in prayer",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-mos-4-9",
+      "reference": "Mosiah 4:9",
+      "clue": "He has all wisdom",
+      "difficulty": 2
+    }
+  ]
+}
