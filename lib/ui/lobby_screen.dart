@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import '../game/deck.dart';
@@ -30,41 +28,23 @@ class LobbyScreen extends StatefulWidget {
   State<LobbyScreen> createState() => _LobbyScreenState();
 }
 
-class _LobbyScreenState extends State<LobbyScreen> with SingleTickerProviderStateMixin {
-  late final AnimationController _shake = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 240),
-  );
-  String? _shaking;
+class _LobbyScreenState extends State<LobbyScreen> {
+  String _book = 'bom';
 
-  Deck? get _hero => widget.decks.cast<Deck?>().firstWhere(
-    (deck) => deck!.playable,
-    orElse: () => null,
-  );
+  Deck? get _hero =>
+      bookDeck(widget.decks, _book) ??
+      widget.decks.cast<Deck?>().firstWhere(
+        (deck) => deck!.playable,
+        orElse: () => null,
+      );
+
+  void _pick(String id) => setState(() => _book = id);
 
   List<Deck> _group(List<String> ids) {
     return [
       for (final id in ids)
         ...widget.decks.where((deck) => deck.id == id),
     ];
-  }
-
-  void _closed(Deck deck) {
-    setState(() => _shaking = deck.id);
-    _shake.forward(from: 0).whenComplete(() {
-      if (mounted && _shaking == deck.id) {
-        setState(() => _shaking = null);
-      }
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Coming soon. Book of Mormon is live.')),
-    );
-  }
-
-  @override
-  void dispose() {
-    _shake.dispose();
-    super.dispose();
   }
 
   @override
@@ -128,6 +108,8 @@ class _LobbyScreenState extends State<LobbyScreen> with SingleTickerProviderStat
                   _LengthControl(length: widget.length, onChanged: widget.onLength),
                 ],
               ),
+              const SizedBox(height: 12),
+              _BookPicker(selected: _book, onPick: _pick),
               const SizedBox(height: 16),
               if (hero != null)
                 Transform.rotate(
@@ -142,7 +124,7 @@ class _LobbyScreenState extends State<LobbyScreen> with SingleTickerProviderStat
                 children: [
                   Text('THE CANON', style: condensed(13, color: gold, tracking: 2)),
                   const Spacer(),
-                  Text('more coming', style: body(13, color: cream.withValues(alpha: 0.7))),
+                  Text('tap a book', style: body(13, color: cream.withValues(alpha: 0.7))),
                 ],
               ),
               const SizedBox(height: 10),
@@ -151,9 +133,8 @@ class _LobbyScreenState extends State<LobbyScreen> with SingleTickerProviderStat
                   for (final deck in _group(canonDeckIds)) ...[
                     Expanded(
                       child: _DeckTile(
-                        deck: deck,
-                        shaking: _shaking == deck.id ? _shake : null,
-                        onTap: () => _closed(deck),
+                        deck: bookDeck(widget.decks, deck.id) ?? deck,
+                        onTap: () => _pick(deck.id),
                       ),
                     ),
                     if (deck != _group(canonDeckIds).last) const SizedBox(width: 10),
@@ -188,6 +169,44 @@ class _LobbyScreenState extends State<LobbyScreen> with SingleTickerProviderStat
           ),
         ),
       ),
+    );
+  }
+}
+
+class _BookPicker extends StatelessWidget {
+  const _BookPicker({required this.selected, required this.onPick});
+
+  final String selected;
+  final ValueChanged<String> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (final id in bookPickerIds) ...[
+          Expanded(
+            child: GestureDetector(
+              key: Key('book-$id'),
+              onTap: () => onPick(id),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                padding: const EdgeInsets.symmetric(vertical: 9),
+                decoration: BoxDecoration(
+                  color: id == selected ? goldLeaf : Colors.transparent,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: goldLeaf.withValues(alpha: 0.7)),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  bookPickerLabels[id]!,
+                  style: condensed(13, color: id == selected ? ink : cream, tracking: 1.2),
+                ),
+              ),
+            ),
+          ),
+          if (id != bookPickerIds.last) const SizedBox(width: 6),
+        ],
+      ],
     );
   }
 }
@@ -356,11 +375,10 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _DeckTile extends StatelessWidget {
-  const _DeckTile({required this.deck, required this.onTap, this.shaking});
+  const _DeckTile({required this.deck, required this.onTap});
 
   final Deck deck;
   final VoidCallback onTap;
-  final Animation<double>? shaking;
 
   @override
   Widget build(BuildContext context) {
@@ -403,17 +421,6 @@ class _DeckTile extends StatelessWidget {
         child: closed ? Hatch(child: body) : body,
       ),
     );
-    final animation = shaking;
-    if (animation == null) {
-      return tile;
-    }
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        final wave = sin(animation.value * pi * 6);
-        return Transform.translate(offset: Offset(wave * 6, 0), child: child);
-      },
-      child: tile,
-    );
+    return tile;
   }
 }

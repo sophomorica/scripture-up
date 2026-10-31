@@ -162,3 +162,46 @@ const partyDeckIds = [
   'kids',
   'hard',
 ];
+
+/// Books the lobby picker offers, in canon order. `all` shuffles every book.
+const bookPickerIds = ['all', 'ot', 'nt', 'bom', 'dc'];
+
+const bookPickerLabels = {
+  'all': 'ALL',
+  'ot': 'OT',
+  'nt': 'NT',
+  'bom': 'BOM',
+  'dc': 'D&C',
+};
+
+/// The playable deck for a book picker choice. A single book is opened even
+/// when its deck JSON still says `soon`; `all` merges every book's cards.
+Deck? bookDeck(List<Deck> decks, String bookId) {
+  Deck open(Deck d, {String? id, String? name, String? pitch, List<GameCard>? cards}) => Deck(
+        id: id ?? d.id,
+        name: name ?? d.name,
+        pitch: pitch ?? d.pitch,
+        hero: d.hero,
+        emblem: d.emblem,
+        format: d.format,
+        status: DeckStatus.live,
+        cards: cards ?? d.cards,
+      );
+  final books = [
+    for (final id in const ['ot', 'nt', 'bom', 'dc']) ...decks.where((d) => d.id == id),
+  ];
+  if (bookId == 'all') {
+    if (books.isEmpty) return null;
+    final base = books.firstWhere((d) => d.id == 'bom', orElse: () => books.first);
+    return open(
+      base,
+      id: 'all',
+      name: 'All Books',
+      pitch: 'Every book, shuffled together.',
+      cards: [for (final d in books) ...d.cards],
+    );
+  }
+  final match = books.where((d) => d.id == bookId);
+  if (match.isEmpty || match.first.cards.isEmpty) return null;
+  return open(match.first);
+}

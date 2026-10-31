@@ -97,12 +97,13 @@ Future<void> finishFromCard(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('lobby is deck-first and keeps closed decks closed', (tester) async {
+  testWidgets('lobby is deck-first and the book picker opens the canon', (tester) async {
     await pumpGame(tester);
     expect(find.text('Book of Mormon'), findsOneWidget);
     expect(find.text('18 CARDS · REFERENCE + CLUE'), findsOneWidget);
     expect(find.text('NARROW ROAD STUDIOS'), findsOneWidget);
-    expect(find.text('COMING SOON'), findsNWidgets(3));
+    expect(find.text('COMING SOON'), findsNothing);
+    expect(find.byKey(const Key('book-all')), findsOneWidget);
     expect(
       find.text('Not affiliated with The Church of Jesus Christ of Latter-day Saints.'),
       findsNothing,
@@ -110,7 +111,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('deck-dc')));
     await tester.pump();
-    expect(find.text('Coming soon. Book of Mormon is live.'), findsOneWidget);
+    expect(find.text('Doctrine and Covenants'), findsWidgets);
     expect(find.byKey(const Key('play-hero')), findsOneWidget);
 
     final people = find.byKey(const Key('deck-people'));
