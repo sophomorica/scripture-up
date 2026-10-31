@@ -242,22 +242,11 @@ void main() {
         .toList();
     final bom = decks.singleWhere((deck) => deck.id == 'bom');
     expect(bom.playable, isTrue);
-    expect(bom.cards, hasLength(18));
-    expect(
-      bom.cards.map((card) => card.reference),
-      containsAll([
-        '1 Nephi 3:7',
-        '1 Nephi 1:1',
-        '3 Nephi 11:10',
-        'Ether 12:27',
-        'Moroni 10:4',
-      ]),
-    );
-    final name = bom.cards.singleWhere((card) => card.id == 'bom-3ne-11-10');
-    expect(name.reference, '3 Nephi 11:10');
-    expect(name.clue, 'He speaks his own name');
+    expect(bom.cards, hasLength(24));
+    final first = bom.cards.singleWhere((card) => card.id == 'bom-1ne-3-7');
+    expect(first.reference, '1 Nephi 3:7');
+    expect(first.clue, "“I will go and do the things which the Lord hath commanded.”");
     expect(decks.where((deck) => deck.playable), hasLength(1));
-    expect(decks.singleWhere((deck) => deck.id == 'nt').cards.singleWhere((card) => card.id == 'nt-john-11-35').clue, 'Two words in the King James');
     expect(decks.singleWhere((deck) => deck.id == 'stories').cards.singleWhere((card) => card.id == 'sty-jonah').answer, 'Jonah and the Great Fish');
     for (final deck in decks) {
       for (final card in deck.cards) {

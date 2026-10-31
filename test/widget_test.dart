@@ -100,7 +100,7 @@ void main() {
   testWidgets('lobby is deck-first and the book picker opens the canon', (tester) async {
     await pumpGame(tester);
     expect(find.text('Book of Mormon'), findsOneWidget);
-    expect(find.text('18 CARDS · REFERENCE + CLUE'), findsOneWidget);
+    expect(find.text('24 CARDS · REFERENCE + CLUE'), findsOneWidget);
     expect(find.text('NARROW ROAD STUDIOS'), findsOneWidget);
     expect(find.text('COMING SOON'), findsNothing);
     expect(find.byKey(const Key('book-all')), findsOneWidget);
