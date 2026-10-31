@@ -8,70 +8,172 @@
   "status": "soon",
   "cards": [
     {
-      "id": "dc-4-2",
-      "reference": "D&C 4:2",
-      "clue": "Heart, might, mind, strength",
+      "id": "dc-joseph-smith-history-1-17",
+      "reference": "Joseph Smith—History 1:17",
+      "clue": "Joseph Smith “saw two Personages, whose brightness and glory defy all description.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-1-30",
+      "reference": "D&C 1:30",
+      "clue": "“The only true and living church.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-1-37-38",
+      "reference": "D&C 1:37–38",
+      "clue": "“Whether by mine own voice or by the voice of my servants, it is the same.”",
       "difficulty": 2
     },
     {
       "id": "dc-6-36",
       "reference": "D&C 6:36",
-      "clue": "Every thought, no fear",
+      "clue": "“Look unto me in every thought; doubt not, fear not.”",
       "difficulty": 2
     },
     {
-      "id": "dc-8-2",
-      "reference": "D&C 8:2",
-      "clue": "Told in your mind and heart",
+      "id": "dc-d-c-8-2-3",
+      "reference": "D&C 8:2–3",
+      "clue": "“I will tell you in your mind and in your heart, by the Holy Ghost.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-13",
+      "reference": "D&C 13",
+      "clue": "The Aaronic Priesthood “holds the keys of the ministering of angels, and of the gospel of repentance, and of baptism.”",
       "difficulty": 2
     },
     {
       "id": "dc-18-10",
       "reference": "D&C 18:10",
-      "clue": "Souls are worth a lot",
+      "clue": "“The worth of souls is great in the sight of God.”",
       "difficulty": 1
     },
     {
-      "id": "dc-25-12",
-      "reference": "D&C 25:12",
-      "clue": "Singing counts as praying",
+      "id": "dc-d-c-18-15-16",
+      "reference": "D&C 18:15–16",
+      "clue": "“How great shall be your joy if you should bring many souls unto me!”",
       "difficulty": 2
     },
     {
-      "id": "dc-58-27",
-      "reference": "D&C 58:27",
-      "clue": "Busy doing good on your own",
+      "id": "dc-d-c-19-16-19",
+      "reference": "D&C 19:16–19",
+      "clue": "“I, God, have suffered these things for all.”",
       "difficulty": 2
     },
     {
-      "id": "dc-64-10",
-      "reference": "D&C 64:10",
-      "clue": "Forgive everyone, no exceptions",
+      "id": "dc-d-c-21-4-6",
+      "reference": "D&C 21:4–6",
+      "clue": "“Thou shalt give heed unto all his words and commandments … as if from mine own mouth.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-29-10-11",
+      "reference": "D&C 29:10–11",
+      "clue": "Christ “will reveal myself from heaven with power and great glory … and dwell in righteousness with men on earth a thousand years.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-49-15",
+      "reference": "D&C 49:15",
+      "clue": "“Marriage is ordained of God.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-58-42-43",
+      "reference": "D&C 58:42–43",
+      "clue": "“He who has repented of his sins, the same is forgiven.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-64-9-11",
+      "reference": "D&C 64:9–11",
+      "clue": "“I, the Lord, will forgive whom I will forgive, but of you it is required to forgive all men.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-76-22-24",
+      "reference": "D&C 76:22–24",
+      "clue": "“By [Jesus Christ] the worlds are and were created.”",
       "difficulty": 2
     },
     {
       "id": "dc-82-10",
       "reference": "D&C 82:10",
-      "clue": "Bound by a promise",
+      "clue": "“I, the Lord, am bound when ye do what I say.”",
       "difficulty": 3
+    },
+    {
+      "id": "dc-d-c-84-20-22",
+      "reference": "D&C 84:20–22",
+      "clue": "“In the ordinances thereof, the power of godliness is manifest.”",
+      "difficulty": 2
     },
     {
       "id": "dc-88-118",
       "reference": "D&C 88:118",
-      "clue": "Study plus faith",
+      "clue": "“Seek learning, even by study and also by faith.”",
       "difficulty": 3
     },
     {
-      "id": "dc-89",
-      "reference": "D&C 89",
-      "clue": "Health code: run, not weary",
-      "difficulty": 1
+      "id": "dc-d-c-89-18-21",
+      "reference": "D&C 89:18–21",
+      "clue": "The blessings of the Word of Wisdom",
+      "difficulty": 2
     },
     {
-      "id": "dc-121-7",
-      "reference": "D&C 121:7–8",
-      "clue": "Hard times: only a small moment",
-      "difficulty": 3
+      "id": "dc-d-c-107-18-20",
+      "reference": "D&C 107:18–20",
+      "clue": "The Melchizedek Priesthood “holds the key of the mysteries of the kingdom, even the key of the knowledge of God.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-121-36-41-42",
+      "reference": "D&C 121:36, 41–42",
+      "clue": "“The rights of the priesthood are inseparably connected with the powers of heaven, and … the powers of heaven cannot be controlled nor handled only on the principles of righteousness.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-130-22-23",
+      "reference": "D&C 130:22–23",
+      "clue": "“The Father has a body of flesh and bones as tangible as man’s; the Son also; but the Holy Ghost … is a personage of Spirit.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-131-1-4",
+      "reference": "D&C 131:1–4",
+      "clue": "In the celestial glory there are three heavens or degrees; … [and] the new and everlasting covenant of marriage.",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-135-3",
+      "reference": "D&C 135:3",
+      "clue": "“Joseph Smith … has done more, save it be Jesus only, for the salvation of men in this world, than any other man that ever lived in it.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-88-81",
+      "reference": "D&C 88:81",
+      "clue": "“I give unto you a commandment, that ye shall teach them unto all men.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-93-1",
+      "reference": "D&C 93:1",
+      "clue": "“Every soul who forsaketh his sins and cometh unto me … shall see my face and know that I am.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-130-20-21",
+      "reference": "D&C 130:20–21",
+      "clue": "“There is a law, irrevocably decreed in heaven … upon which all blessings are predicated.”",
+      "difficulty": 2
+    },
+    {
+      "id": "dc-d-c-138-11-12-32-34",
+      "reference": "D&C 138:11–12, 32–34",
+      "clue": "The gospel was preached to the spirits in prison.",
+      "difficulty": 2
     }
   ]
 }
