@@ -1,6 +1,10 @@
 # Deck fact-check
 
-Checked 26 Sep 2026 against the scripture text on churchofjesuschrist.org (the Church's published King James Bible and the standard Book of Mormon / Doctrine and Covenants text). Each row is one item from the "Accuracy flags: summary" in the design pack. The live Book of Mormon deck is the shipped 18 cards. None of those 18 was simply wrong, so every id, reference, and clue in that deck is unchanged.
+The four scripture decks match Seminary Sidekick one for one. Old Testament, New Testament, and Book of Mormon have 24 passages each. Doctrine and Covenants has 28. `test/sidekick_parity_test.dart` checks the reference and the key phrase of every card. The lobby picker plays any one of those books, or all four together. Party decks stay closed.
+
+The notes below are the 26 Sep 2026 check of an earlier card list. Several of those card ids are not in the current decks.
+
+Checked 26 Sep 2026 against the scripture text on churchofjesuschrist.org (the Church's published King James Bible and the standard Book of Mormon and Doctrine and Covenants text). Each row is one item from the "Accuracy flags: summary" in the design pack. The Book of Mormon deck at that date had 18 cards. None of those 18 was simply wrong, so every id, reference, and clue in that deck was left as it stood.
 
 ## 1. `bom-3ne-11-10` — Book of Mormon (live)
 
@@ -73,4 +77,4 @@ Checked 26 Sep 2026 against the scripture text on churchofjesuschrist.org (the C
 | `sty-jonah` | Answer → "Jonah and the Great Fish" |
 | All 18 Book of Mormon cards | Unchanged |
 
-Doctrine and Covenants, Old Testament, and New Testament stay closed. The themed decks stay proposed. Only Book of Mormon is playable.
+The themed decks stay proposed. The lobby plays the four scripture books. The table records the September edits. Current card text comes from Seminary Sidekick.

@@ -1,12 +1,12 @@
 # Feature map
 
-The repo is https://github.com/sophomorica/scripture-up. Scripture Up 1.1.0+3. Portrait lobby, landscape round. Bundle id `com.narrowroad.scriptureup`. Team `JQ7J89B22A`.
+The repo is https://github.com/sophomorica/scripture-up. Scripture Up 1.1.0+4. Portrait lobby, landscape round. Bundle id `com.narrowroad.scriptureup`. Team `JQ7J89B22A`.
 
 ## Screens
 
 | Screen | Where | Orientation | Notes |
 | --- | --- | --- | --- |
-| Lobby | `LobbyScreen` | Portrait | Deck-first. Book of Mormon is the only PLAY. Canon tiles shake and toast. Party tiles open a sheet with PLAY disabled. |
+| Lobby | `LobbyScreen` | Portrait | Deck-first. The picker is ALL, OT, NT, BOM, and D&C. Book of Mormon is the default. A canon tile selects that same book. Party tiles open a sheet with PLAY disabled. |
 | Deck sheet | `DeckSheet` | Portrait | Length, Record the team (off), Tilt or Tap buttons. |
 | About | `AboutSheet` | Portrait | How to play, silent-switch preference, affiliation line. Long-press the title for the tilt debug line. |
 | Forehead | `ForeheadView` | Landscape | `ROUND N`. Level hold arms the countdown, or START in tap mode. |
@@ -29,10 +29,10 @@ The repo is https://github.com/sophomorica/scripture-up. Scripture Up 1.1.0+3. P
 
 ## Keys used by tests
 
-`play-hero`, `length-30`, `length-60`, `length-90`, `deck-bom`, `deck-dc`, `deck-people`, `open-recordings`, `about`, `sheet-play`, `record-team`, `start-round`, `countdown`, `round-label`, `card-reference`, `card-clue`, `got-it`, `pass`, `round-clock`, `end-round`, `play-again`, `new-deck`, `home-results`, `best-line`, `round-list`, `jump-<cardId>`, `save-recording`, `delete-recording`, `confirm-delete`, `library-empty`, `seek-unavailable`.
+`play-hero`, `length-30`, `length-60`, `length-90`, `book-all`, `book-ot`, `book-nt`, `book-bom`, `book-dc`, `deck-bom`, `deck-dc`, `deck-people`, `open-recordings`, `about`, `sheet-play`, `record-team`, `start-round`, `countdown`, `round-label`, `card-reference`, `card-clue`, `got-it`, `pass`, `round-clock`, `end-round`, `play-again`, `new-deck`, `home-results`, `best-line`, `round-list`, `jump-<cardId>`, `save-recording`, `delete-recording`, `confirm-delete`, `library-empty`, `seek-unavailable`.
 
 ## Proof
 
-- `flutter analyze` is clean.
-- `flutter test` covers tilt fixtures, the round controller, clip save/delete, each screen, and writes `artifacts/screens/*.png`.
+- `flutter analyze` reports no issues.
+- `flutter test` covers tilt fixtures, the round controller, clip save and delete, the book picker, and each screen. Sidekick parity is Old Testament 24, New Testament 24, Book of Mormon 24, and Doctrine and Covenants 28. The same run writes `artifacts/screens/*.png`.
 - Device steps are in `.cursor/skills/verify-tilt/SKILL.md`.
