@@ -8,76 +8,148 @@
   "status": "soon",
   "cards": [
     {
-      "id": "nt-matt-5-14",
-      "reference": "Matthew 5:14",
-      "clue": "City on a hill, you shine",
-      "difficulty": 1
-    },
-    {
-      "id": "nt-matt-5-44",
-      "reference": "Matthew 5:44",
-      "clue": "Love the people who hate you",
+      "id": "nt-matthew-5-14-16",
+      "reference": "Matthew 5:14–16",
+      "clue": "“Let your light so shine before men.”",
       "difficulty": 2
     },
     {
-      "id": "nt-matt-14-29",
-      "reference": "Matthew 14:29",
-      "clue": "Peter steps out on the sea",
+      "id": "nt-matthew-11-28-30",
+      "reference": "Matthew 11:28–30",
+      "clue": "“Come unto me, all ye that labour and are heavy laden, and I will give you rest.”",
       "difficulty": 2
     },
     {
-      "id": "nt-luke-2-7",
-      "reference": "Luke 2:7",
-      "clue": "Manger; no room at the inn",
-      "difficulty": 1
+      "id": "nt-matthew-16-15-19",
+      "reference": "Matthew 16:15–19",
+      "clue": "Jesus said, “I will give unto thee the keys of the kingdom.”",
+      "difficulty": 2
     },
     {
-      "id": "nt-luke-15-4",
-      "reference": "Luke 15:4",
-      "clue": "Leave 99, find the one",
+      "id": "nt-matthew-22-36-39",
+      "reference": "Matthew 22:36–39",
+      "clue": "“Thou shalt love the Lord thy God. … Thou shalt love thy neighbour.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-luke-2-10-12",
+      "reference": "Luke 2:10–12",
+      "clue": "“For unto you is born this day in the city of David a Saviour, which is Christ the Lord.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-luke-22-19-20",
+      "reference": "Luke 22:19–20",
+      "clue": "Jesus Christ commanded, partake of the sacrament “in remembrance of me.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-luke-24-36-39",
+      "reference": "Luke 24:36–39",
+      "clue": "“For a spirit hath not flesh and bones, as ye see me have.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-john-3-5",
+      "reference": "John 3:5",
+      "clue": "“Except a man be born of water and of the Spirit, he cannot enter into the kingdom of God.”",
       "difficulty": 2
     },
     {
       "id": "nt-john-3-16",
       "reference": "John 3:16",
-      "clue": "God so loved the world",
+      "clue": "“For God so loved the world, that he gave his only begotten Son.”",
       "difficulty": 1
     },
     {
-      "id": "nt-john-11-35",
-      "reference": "John 11:35",
-      "clue": "Two words in the King James",
-      "difficulty": 1
-    },
-    {
-      "id": "nt-john-13-34",
-      "reference": "John 13:34",
-      "clue": "New commandment: love each other",
+      "id": "nt-john-7-17",
+      "reference": "John 7:17",
+      "clue": "“If any man will do his will, he shall know of the doctrine.”",
       "difficulty": 2
     },
     {
-      "id": "nt-acts-9-3",
-      "reference": "Acts 9:3–4",
-      "clue": "Blinding light on the road",
-      "difficulty": 3
-    },
-    {
-      "id": "nt-jas-1-5",
-      "reference": "James 1:5",
-      "clue": "Lack wisdom? Just ask",
-      "difficulty": 1
-    },
-    {
-      "id": "nt-1cor-13-13",
-      "reference": "1 Corinthians 13:13",
-      "clue": "Faith, hope, and the greatest one",
+      "id": "nt-john-17-3",
+      "reference": "John 17:3",
+      "clue": "“And this is life eternal, that they might know thee the only true God, and Jesus Christ.”",
       "difficulty": 2
     },
     {
-      "id": "nt-rev-3-20",
-      "reference": "Revelation 3:20",
-      "clue": "Standing at the door, knocking",
-      "difficulty": 3
+      "id": "nt-1-corinthians-6-19-20",
+      "reference": "1 Corinthians 6:19–20",
+      "clue": "“Your body is the temple of the Holy Ghost.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-1-corinthians-11-11",
+      "reference": "1 Corinthians 11:11",
+      "clue": "“Neither is the man without the woman, neither the woman without the man, in the Lord.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-1-corinthians-15-20-22",
+      "reference": "1 Corinthians 15:20–22",
+      "clue": "“As in Adam all die, even so in Christ shall all be made alive.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-1-corinthians-15-40-42",
+      "reference": "1 Corinthians 15:40–42",
+      "clue": "In the Resurrection, there are three degrees of glory.",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-ephesians-1-10",
+      "reference": "Ephesians 1:10",
+      "clue": "“In the dispensation of the fulness of times he might gather together in one all things in Christ.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-ephesians-2-19-20",
+      "reference": "Ephesians 2:19–20",
+      "clue": "The Church is “built upon the foundation of the apostles and prophets, Jesus Christ himself being the chief corner stone.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-2-thessalonians-2-1-3",
+      "reference": "2 Thessalonians 2:1–3",
+      "clue": "“The day of Christ … shall not come, except there come a falling away first.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-2-timothy-3-15-17",
+      "reference": "2 Timothy 3:15–17",
+      "clue": "“The holy scriptures … are able to make thee wise unto salvation.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-hebrews-12-9",
+      "reference": "Hebrews 12:9",
+      "clue": "Heavenly Father is “the Father of spirits.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-james-1-5-6",
+      "reference": "James 1:5–6",
+      "clue": "“If any of you lack wisdom, let him ask of God.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-james-2-17-18",
+      "reference": "James 2:17–18",
+      "clue": "“Faith, if it hath not works, is dead.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-1-peter-4-6",
+      "reference": "1 Peter 4:6",
+      "clue": "“The gospel [was] preached also to them that are dead.”",
+      "difficulty": 2
+    },
+    {
+      "id": "nt-revelation-20-12",
+      "reference": "Revelation 20:12",
+      "clue": "“And the dead were judged … according to their works.”",
+      "difficulty": 2
     }
   ]
 }

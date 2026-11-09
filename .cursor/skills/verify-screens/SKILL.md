@@ -12,6 +12,9 @@ flutter test
 `flutter analyze` must report no issues. `flutter test` must pass, including `test/screenshot_test.dart`, which rewrites:
 
 - `artifacts/screens/01-lobby.png`
+- `artifacts/screens/01-lobby-ot.png`
+- `artifacts/screens/01-lobby-all.png`
+- `artifacts/screens/01-lobby-nt-tile.png`
 - `artifacts/screens/02-deck-sheet.png`
 - `artifacts/screens/03-forehead.png`
 - `artifacts/screens/04-countdown.png`
@@ -24,7 +27,7 @@ flutter test
 
 ## What to look at
 
-- Lobby: Book of Mormon hero, 60s selected, three coming-soon canon tiles, party tiles with NEW.
+- Lobby: Book of Mormon hero, 60s selected, picker row ALL, OT, NT, BOM, and D&C, canon tiles with card counts, party tiles with NEW. `01-lobby-ot.png` shows Old Testament. `01-lobby-all.png` shows All Books at 100 cards. `01-lobby-nt-tile.png` shows the New Testament tile selecting NT.
 - Sheet: Book of Mormon, sample card, 30/60/90, Record the team, Tilt / Tap buttons, PLAY.
 - Forehead and countdown: ROUND 1, landscape.
 - Card: full-bleed blue, a reference, a clue, tilt hints.

@@ -8,76 +8,148 @@
   "status": "soon",
   "cards": [
     {
-      "id": "ot-gen-1-1",
-      "reference": "Genesis 1:1",
-      "clue": "Day one of everything",
-      "difficulty": 1
+      "id": "ot-moses-1-39",
+      "reference": "Moses 1:39",
+      "clue": "This is my work and my glory—to bring to pass the immortality and eternal life of man.",
+      "difficulty": 2
     },
     {
-      "id": "ot-gen-1-27",
-      "reference": "Genesis 1:27",
-      "clue": "Made in his image",
+      "id": "ot-moses-7-18",
+      "reference": "Moses 7:18",
+      "clue": "The Lord called his people Zion, because they were of one heart and one mind.",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-abraham-2-9-11",
+      "reference": "Abraham 2:9–11",
+      "clue": "The Lord promised Abraham that his seed would “bear this ministry and Priesthood unto all nations.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-abraham-3-22-23",
+      "reference": "Abraham 3:22–23",
+      "clue": "As spirits we “were organized before the world was.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-genesis-1-26-27",
+      "reference": "Genesis 1:26–27",
+      "clue": "“God created man in his own image.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-genesis-2-24",
+      "reference": "Genesis 2:24",
+      "clue": "“A man … shall cleave unto his wife: and they shall be one.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-genesis-39-9",
+      "reference": "Genesis 39:9",
+      "clue": "“How then can I do this great wickedness, and sin against God?”",
       "difficulty": 2
     },
     {
       "id": "ot-ex-20-3",
       "reference": "Exodus 20:3–17",
-      "clue": "The big ten rules",
+      "clue": "The Ten Commandments",
       "difficulty": 1
     },
     {
       "id": "ot-josh-24-15",
       "reference": "Joshua 24:15",
-      "clue": "Choose today; my house serves",
+      "clue": "“Choose you this day whom ye will serve.”",
       "difficulty": 2
     },
     {
-      "id": "ot-1sam-16-7",
-      "reference": "1 Samuel 16:7",
-      "clue": "Looks past appearances to the heart",
+      "id": "ot-psalm-24-3-4",
+      "reference": "Psalm 24:3–4",
+      "clue": "“Who shall stand in his holy place? He that hath clean hands, and a pure heart.”",
       "difficulty": 2
-    },
-    {
-      "id": "ot-1sam-17-49",
-      "reference": "1 Samuel 17:49",
-      "clue": "Sling, stone, giant's forehead",
-      "difficulty": 2
-    },
-    {
-      "id": "ot-ps-23-1",
-      "reference": "Psalm 23:1",
-      "clue": "Shepherd; I lack nothing",
-      "difficulty": 1
     },
     {
       "id": "ot-prov-3-5",
       "reference": "Proverbs 3:5–6",
-      "clue": "Trust, don't lean on yourself",
+      "clue": "“Trust in the Lord with all thine heart … and he shall direct thy paths.”",
       "difficulty": 2
     },
     {
       "id": "ot-isa-1-18",
       "reference": "Isaiah 1:18",
-      "clue": "Scarlet turned snow white",
+      "clue": "“Though your sins be as scarlet, they shall be as white as snow.”",
       "difficulty": 3
     },
     {
-      "id": "ot-dan-6-22",
-      "reference": "Daniel 6:22",
-      "clue": "Angel shut the lions' mouths",
+      "id": "ot-isaiah-5-20",
+      "reference": "Isaiah 5:20",
+      "clue": "“Woe unto them that call evil good, and good evil.”",
       "difficulty": 2
     },
     {
-      "id": "ot-jonah-1-17",
-      "reference": "Jonah 1:17",
-      "clue": "Three days inside a fish",
-      "difficulty": 1
+      "id": "ot-isaiah-29-13-14",
+      "reference": "Isaiah 29:13–14",
+      "clue": "The restoration of the gospel is “a marvellous work and a wonder.”",
+      "difficulty": 2
     },
     {
-      "id": "ot-mal-3-10",
-      "reference": "Malachi 3:10",
-      "clue": "Windows of heaven open",
-      "difficulty": 3
+      "id": "ot-isaiah-53-3-5",
+      "reference": "Isaiah 53:3–5",
+      "clue": "“Surely [Jesus Christ] hath borne our griefs, and carried our sorrows.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-isaiah-58-6-7",
+      "reference": "Isaiah 58:6–7",
+      "clue": "The blessings of a proper fast",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-isaiah-58-13-14",
+      "reference": "Isaiah 58:13–14",
+      "clue": "“Turn away … from doing thy pleasure on my holy day; and call the sabbath a delight.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-jeremiah-1-4-5",
+      "reference": "Jeremiah 1:4–5",
+      "clue": "“Before I formed thee in the belly … I ordained thee a prophet unto the nations.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-ezekiel-3-16-17",
+      "reference": "Ezekiel 3:16–17",
+      "clue": "The prophet is “a watchman unto the house of Israel.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-ezekiel-37-15-17",
+      "reference": "Ezekiel 37:15–17",
+      "clue": "The Bible and the Book of Mormon “shall become one in thine hand.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-daniel-2-44-45",
+      "reference": "Daniel 2:44–45",
+      "clue": "God shall “set up a kingdom, which shall never be destroyed.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-amos-3-7",
+      "reference": "Amos 3:7",
+      "clue": "“The Lord God … revealeth his secret unto his servants the prophets.”",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-malachi-3-8-10",
+      "reference": "Malachi 3:8–10",
+      "clue": "The blessings of paying tithing",
+      "difficulty": 2
+    },
+    {
+      "id": "ot-malachi-4-5-6",
+      "reference": "Malachi 4:5–6",
+      "clue": "Elijah “shall turn … the heart of the children to their fathers.”",
+      "difficulty": 2
     }
   ]
 }

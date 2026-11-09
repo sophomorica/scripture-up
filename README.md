@@ -4,7 +4,7 @@ Scripture Up is a forehead party game from Narrow Road Studios. One player holds
 
 The app is free and stores everything on the phone. There are no accounts and no purchases. The lobby is portrait. The round, from the forehead prompt through results, is landscape. The bundle id is `com.narrowroad.scriptureup`. The deployment target is iOS 15, so it runs on iPhone 12 and newer.
 
-Version 1.1.0+3 is the deck-first redesign. Book of Mormon is the only live deck. The other canon decks say coming soon. Party decks are visible and not playable yet.
+Version 1.1.0+4 is the deck-first build. The lobby opens on Book of Mormon. The picker also offers ALL, OT, NT, and D&C. A canon tile selects that same book. ALL deals the four books together, 100 cards, and does not repeat a card. Old Testament, New Testament, and Book of Mormon have 24 cards each. Doctrine and Covenants has 28. Party decks are visible and not playable yet.
 
 ## Run it on an iPhone
 
@@ -21,7 +21,7 @@ The first launch asks for the camera and the microphone only if Record the team 
 ## Play a round
 
 1. Leave the round length at 60 seconds, or choose 30 or 90.
-2. Tap PLAY on Book of Mormon. In the sheet, leave Tilt selected, or choose Tap buttons. Record the team stays off unless you turn it on.
+2. Leave Book of Mormon selected, or pick another book or ALL. Tap PLAY. In the sheet, leave Tilt selected, or choose Tap buttons. Record the team stays off unless you turn it on.
 3. Turn the phone sideways and hold it on your forehead. The screen faces the team. Hold it level until the countdown starts. In tap mode, press START.
 4. Tilt the screen down past about 50 degrees and hold briefly for a correct guess. Tilt it up past about 50 degrees to pass. Bring the phone back to level before the next card arms.
 5. Long-press the clock to pause. End round from the pause screen.
@@ -39,7 +39,7 @@ Tilt is behind `TiltSensor`. The detector uses the accelerometer, including grav
 
 Run `flutter analyze` and `flutter test`.
 
-The tests cover the tilt threshold, hold, return-to-level, and tap fallback; the round clock; personal best; save, delete, and a camera that never starts; and each screen at phone size. Screenshot PNGs of the screens are written to `artifacts/screens/` by `test/screenshot_test.dart`.
+The tests cover the tilt threshold, hold, return-to-level, and tap fallback. They also cover the round clock, personal best, save, delete, a camera that never starts, the book picker, and each screen at phone size. The four scripture decks match the Seminary Sidekick doctrinal mastery list one for one. `test/screenshot_test.dart` writes screenshot PNGs to `artifacts/screens/` in Fraunces and Barlow.
 
 Device steps are in `.cursor/skills/verify-tilt/SKILL.md`.
 

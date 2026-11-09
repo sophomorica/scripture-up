@@ -10,109 +10,145 @@
     {
       "id": "bom-1ne-3-7",
       "reference": "1 Nephi 3:7",
-      "clue": "I will go and do",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-1ne-1-1",
-      "reference": "1 Nephi 1:1",
-      "clue": "Born of goodly parents",
+      "clue": "“I will go and do the things which the Lord hath commanded.”",
       "difficulty": 2
     },
     {
       "id": "bom-2ne-2-25",
       "reference": "2 Nephi 2:25",
-      "clue": "That they might have joy",
+      "clue": "“Adam fell that men might be; and men are, that they might have joy.”",
       "difficulty": 2
     },
     {
-      "id": "bom-2ne-9-28",
-      "reference": "2 Nephi 9:28",
-      "clue": "Learned, yet not wise",
+      "id": "bom-2-nephi-2-27",
+      "reference": "2 Nephi 2:27",
+      "clue": "“They are free to choose liberty and eternal life … or … captivity and death.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-2-nephi-26-33",
+      "reference": "2 Nephi 26:33",
+      "clue": "“All are alike unto God.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-2-nephi-28-30",
+      "reference": "2 Nephi 28:30",
+      "clue": "God “will give unto the children of men line upon line, precept upon precept.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-2-nephi-32-3",
+      "reference": "2 Nephi 32:3",
+      "clue": "“Feast upon the words of Christ; for behold, the words of Christ will tell you all things what ye should do.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-2-nephi-32-8-9",
+      "reference": "2 Nephi 32:8–9",
+      "clue": "“Ye must pray always.”",
       "difficulty": 2
     },
     {
       "id": "bom-mos-2-17",
       "reference": "Mosiah 2:17",
-      "clue": "Service to other people",
+      "clue": "“When ye are in the service of your fellow beings ye are only in the service of your God.”",
       "difficulty": 2
     },
     {
-      "id": "bom-alma-32-21",
-      "reference": "Alma 32:21",
-      "clue": "Hope in what is not seen",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-alma-37-6",
-      "reference": "Alma 37:6",
-      "clue": "Small and simple things",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-hel-5-12",
-      "reference": "Helaman 5:12",
-      "clue": "A foundation on the rock",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-3ne-11-10",
-      "reference": "3 Nephi 11:10",
-      "clue": "He speaks his own name",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-ether-12-27",
-      "reference": "Ether 12:27",
-      "clue": "Weakness made strong",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-moro-10-4",
-      "reference": "Moroni 10:4",
-      "clue": "Ask if it is true",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-1ne-16-10",
-      "reference": "1 Nephi 16:10",
-      "clue": "A ball of curious workmanship",
+      "id": "bom-mosiah-2-41",
+      "reference": "Mosiah 2:41",
+      "clue": "“Those that keep the commandments of God … are blessed in all things.”",
       "difficulty": 2
     },
     {
       "id": "bom-mos-3-19",
       "reference": "Mosiah 3:19",
-      "clue": "Yield like a child",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-alma-7-11",
-      "reference": "Alma 7:11",
-      "clue": "Pains and sicknesses",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-2ne-31-20",
-      "reference": "2 Nephi 31:20",
-      "clue": "Press forward",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-moro-7-47",
-      "reference": "Moroni 7:47",
-      "clue": "Pure love",
-      "difficulty": 2
-    },
-    {
-      "id": "bom-enos-1-4",
-      "reference": "Enos 1:4",
-      "clue": "A wrestle in prayer",
+      "clue": "“[Put] off the natural man and [become] a saint through the atonement of Christ the Lord.”",
       "difficulty": 2
     },
     {
       "id": "bom-mos-4-9",
       "reference": "Mosiah 4:9",
-      "clue": "He has all wisdom",
+      "clue": "“Believe in God; … believe that he has all wisdom.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-mosiah-18-8-10",
+      "reference": "Mosiah 18:8–10",
+      "clue": "Be “baptized in the name of the Lord, as a witness … that ye have entered into a covenant with him.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-alma-7-11-13",
+      "reference": "Alma 7:11–13",
+      "clue": "“And he shall go forth, suffering pains and afflictions and temptations of every kind.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-alma-34-9-10",
+      "reference": "Alma 34:9–10",
+      "clue": "“There must be an atonement made, … an infinite and eternal sacrifice.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-alma-39-9",
+      "reference": "Alma 39:9",
+      "clue": "“Go no more after the lusts of your eyes.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-alma-41-10",
+      "reference": "Alma 41:10",
+      "clue": "“Wickedness never was happiness.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-hel-5-12",
+      "reference": "Helaman 5:12",
+      "clue": "“It is upon the rock of our Redeemer … that ye must build your foundation.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-3-nephi-11-10-11",
+      "reference": "3 Nephi 11:10–11",
+      "clue": "“I have suffered the will of the Father in all things from the beginning.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-3-nephi-12-48",
+      "reference": "3 Nephi 12:48",
+      "clue": "“Be perfect even as I, or your Father who is in heaven is perfect.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-3-nephi-27-20",
+      "reference": "3 Nephi 27:20",
+      "clue": "“Come unto me and be baptized … that ye may be sanctified by the reception of the Holy Ghost.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-ether-12-6",
+      "reference": "Ether 12:6",
+      "clue": "“Ye receive no witness until after the trial of your faith.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-ether-12-27",
+      "reference": "Ether 12:27",
+      "clue": "“If men come unto me … then will I make weak things become strong unto them.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-moroni-7-45-48",
+      "reference": "Moroni 7:45–48",
+      "clue": "“Charity is the pure love of Christ.”",
+      "difficulty": 2
+    },
+    {
+      "id": "bom-moroni-10-4-5",
+      "reference": "Moroni 10:4–5",
+      "clue": "Ask with a sincere heart, with real intent, having faith in Christ … [and] by the power of the Holy Ghost ye may know the truth of all things.",
       "difficulty": 2
     }
   ]

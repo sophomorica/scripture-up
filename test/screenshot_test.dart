@@ -14,10 +14,13 @@ import 'package:scripture_up/ui/round_views.dart';
 import 'package:scripture_up/ui/sheets.dart';
 import 'package:scripture_up/ui/style.dart';
 
+import 'support/app_fonts.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('renders each screen to artifacts/screens', (tester) async {
+    await loadAppFonts();
     final decks = [
       for (final path in deckAssetPaths)
         parseDeck(File(path).readAsStringSync()),
@@ -41,6 +44,22 @@ void main() {
       ),
     ];
 
+    Future<void> capture(String name) async {
+      await tester.pump();
+      final boundary = tester.renderObject<RenderRepaintBoundary>(
+        find.byKey(const Key('shot')),
+      );
+      final image = await tester.runAsync(
+        () => boundary.toImage(pixelRatio: 2),
+      );
+      final bytes = await tester.runAsync(
+        () => image!.toByteData(format: ui.ImageByteFormat.png),
+      );
+      final file = File('artifacts/screens/$name.png');
+      file.parent.createSync(recursive: true);
+      file.writeAsBytesSync(bytes!.buffer.asUint8List());
+    }
+
     Future<void> shoot(String name, Size size, Widget child) async {
       await tester.binding.setSurfaceSize(size);
       tester.view.physicalSize = size;
@@ -57,19 +76,7 @@ void main() {
           ),
         ),
       );
-      await tester.pump();
-      final boundary = tester.renderObject<RenderRepaintBoundary>(
-        find.byKey(const Key('shot')),
-      );
-      final image = await tester.runAsync(
-        () => boundary.toImage(pixelRatio: 2),
-      );
-      final bytes = await tester.runAsync(
-        () => image!.toByteData(format: ui.ImageByteFormat.png),
-      );
-      final file = File('artifacts/screens/$name.png');
-      file.parent.createSync(recursive: true);
-      file.writeAsBytesSync(bytes!.buffer.asUint8List());
+      await capture(name);
     }
 
     await shoot(
@@ -85,6 +92,15 @@ void main() {
         onAbout: () {},
       ),
     );
+    await tester.tap(find.byKey(const Key('book-ot')));
+    await tester.pumpAndSettle();
+    await capture('01-lobby-ot');
+    await tester.tap(find.byKey(const Key('book-all')));
+    await tester.pumpAndSettle();
+    await capture('01-lobby-all');
+    await tester.tap(find.byKey(const Key('deck-nt')));
+    await tester.pumpAndSettle();
+    await capture('01-lobby-nt-tile');
     await shoot(
       '02-deck-sheet',
       const Size(402, 874),
@@ -203,7 +219,10 @@ void main() {
 
     await tester.binding.setSurfaceSize(null);
     expect(File('artifacts/screens/05-card.png').existsSync(), isTrue);
-    expect(File('artifacts/screens/09-results.png').lengthSync(), greaterThan(1000));
+    expect(
+      File('artifacts/screens/09-results.png').lengthSync(),
+      greaterThan(1000),
+    );
   });
 }
 
