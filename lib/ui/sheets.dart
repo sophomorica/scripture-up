@@ -171,7 +171,7 @@ class DeckSheet extends StatelessWidget {
             const SizedBox(height: 12),
             if (!deck.playable)
               Text(
-                'This deck is not live yet. Book of Mormon is the one you can play.',
+                'This deck is not live yet. Pick a book from the picker on the lobby to play.',
                 style: body(15),
               )
             else
@@ -227,6 +227,16 @@ class AboutSheet extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'One player holds the phone on their forehead. The screen faces the team.',
+              style: body(17),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'The team reads the phrase out loud and may give any hints, but never says the book, chapter, or verse.',
+              style: body(17),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'The guesser names the book, chapter, and verse. The team decides if it is right.',
               style: body(17),
             ),
             const SizedBox(height: 8),

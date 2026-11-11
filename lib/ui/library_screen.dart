@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -45,10 +44,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
     if (discard == true) {
       await widget.store.deleteSaved(file);
-      final sidecar = File(file.path.replaceAll('.mp4', '.json'));
-      if (sidecar.existsSync()) {
-        sidecar.deleteSync();
-      }
       _reload();
     }
   }
@@ -97,7 +92,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                          builder: (_) => _PlayerRoute(file: file),
+                          builder: (_) => _PlayerRoute(
+                            file: file,
+                            marks: widget.store.marksFor(file),
+                          ),
                         ),
                       );
                     },
@@ -110,9 +108,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
 }
 
 class _PlayerRoute extends StatefulWidget {
-  const _PlayerRoute({required this.file});
+  const _PlayerRoute({required this.file, required this.marks});
 
   final File file;
+  final List<RoundMark> marks;
 
   @override
   State<_PlayerRoute> createState() => _PlayerRouteState();
@@ -136,23 +135,6 @@ class _PlayerRouteState extends State<_PlayerRoute> {
 
   @override
   Widget build(BuildContext context) {
-    return ReviewScreen(file: widget.file, marks: marksFor(widget.file));
-  }
-}
-
-List<RoundMark> marksFor(File video) {
-  final sidecar = File(video.path.replaceAll('.mp4', '.json'));
-  if (!sidecar.existsSync()) {
-    return const [];
-  }
-  try {
-    final json = jsonDecode(sidecar.readAsStringSync()) as Map<String, Object?>;
-    final marks = json['marks'] as List<Object?>? ?? const [];
-    return [
-      for (final entry in marks)
-        if (entry is Map<String, Object?>) RoundMark.fromJson(entry),
-    ];
-  } catch (_) {
-    return const [];
+    return ReviewScreen(file: widget.file, marks: widget.marks);
   }
 }

@@ -4,11 +4,17 @@ import 'dart:io';
 import 'package:scripture_up/recording/round_recorder.dart';
 
 class FakeRoundRecorder implements RoundRecorder {
-  FakeRoundRecorder(this.directory, {this.fail = false, this.gate});
+  FakeRoundRecorder(
+    this.directory, {
+    this.fail = false,
+    this.gate,
+    this.stopGate,
+  });
 
   final Directory directory;
   final bool fail;
   final Completer<void>? gate;
+  final Completer<void>? stopGate;
   var started = false;
 
   @override
@@ -33,6 +39,7 @@ class FakeRoundRecorder implements RoundRecorder {
       return null;
     }
     started = false;
+    await stopGate?.future;
     final file = File(
       '${directory.path}/temp-${DateTime.now().microsecondsSinceEpoch}.mp4',
     );

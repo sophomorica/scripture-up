@@ -3,7 +3,7 @@ import 'dart:ui';
 
 enum DeckFormat { reference, answer }
 
-enum DeckStatus { live, soon, proposed }
+enum DeckStatus { live, proposed }
 
 class GameCard {
   const GameCard({
@@ -95,7 +95,6 @@ Deck parseDeck(String source) {
         : DeckFormat.reference,
     status: switch (json['status']) {
       'live' => DeckStatus.live,
-      'soon' => DeckStatus.soon,
       _ => DeckStatus.proposed,
     },
     cards: cards,
@@ -174,34 +173,28 @@ const bookPickerLabels = {
   'dc': 'D&C',
 };
 
-/// The playable deck for a book picker choice. A single book is opened even
-/// when its deck JSON still says `soon`; `all` merges every book's cards.
+/// The deck for a book picker choice. `all` merges every book's cards.
 Deck? bookDeck(List<Deck> decks, String bookId) {
-  Deck open(Deck d, {String? id, String? name, String? pitch, List<GameCard>? cards}) => Deck(
-        id: id ?? d.id,
-        name: name ?? d.name,
-        pitch: pitch ?? d.pitch,
-        hero: d.hero,
-        emblem: d.emblem,
-        format: d.format,
-        status: DeckStatus.live,
-        cards: cards ?? d.cards,
-      );
   final books = [
-    for (final id in const ['ot', 'nt', 'bom', 'dc']) ...decks.where((d) => d.id == id),
+    for (final id in const ['ot', 'nt', 'bom', 'dc'])
+      ...decks.where((d) => d.id == id && d.playable),
   ];
-  if (bookId == 'all') {
-    if (books.isEmpty) return null;
-    final base = books.firstWhere((d) => d.id == 'bom', orElse: () => books.first);
-    return open(
-      base,
-      id: 'all',
-      name: 'All Books',
-      pitch: 'Every book, shuffled together.',
-      cards: [for (final d in books) ...d.cards],
-    );
+  if (bookId != 'all') {
+    return books.where((d) => d.id == bookId).firstOrNull;
   }
-  final match = books.where((d) => d.id == bookId);
-  if (match.isEmpty || match.first.cards.isEmpty) return null;
-  return open(match.first);
+  if (books.isEmpty) return null;
+  final base = books.firstWhere(
+    (d) => d.id == 'bom',
+    orElse: () => books.first,
+  );
+  return Deck(
+    id: 'all',
+    name: 'All Books',
+    pitch: 'Your team reads the phrase. You name the verse. All four books, shuffled.',
+    hero: base.hero,
+    emblem: base.emblem,
+    format: base.format,
+    status: DeckStatus.live,
+    cards: [for (final d in books) ...d.cards],
+  );
 }

@@ -3,6 +3,7 @@ import '../game/cues.dart';
 abstract class GameAudio {
   Future<void> play(SoundCue cue);
   Future<void> setRespectSilence(bool respect);
+  Future<void> restoreSession();
 }
 
 class SilentAudio implements GameAudio {
@@ -11,4 +12,7 @@ class SilentAudio implements GameAudio {
 
   @override
   Future<void> setRespectSilence(bool respect) async {}
+
+  @override
+  Future<void> restoreSession() async {}
 }

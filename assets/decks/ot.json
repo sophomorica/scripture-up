@@ -1,11 +1,11 @@
 {
   "id": "ot",
   "name": "Old Testament",
-  "pitch": "From the garden to the prophets.",
+  "pitch": "Your team reads the phrase. You name the verse. Eden to the prophets.",
   "heroColor": "#A4502A",
   "emblem": "ridge",
   "format": "reference",
-  "status": "soon",
+  "status": "live",
   "cards": [
     {
       "id": "ot-moses-1-39",

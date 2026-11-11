@@ -290,25 +290,35 @@ class _HatchPainter extends CustomPainter {
 }
 
 class Flakes extends StatelessWidget {
-  const Flakes({super.key, required this.progress, this.count = 16});
+  const Flakes({
+    super.key,
+    required this.progress,
+    this.count = 16,
+    this.reach = 200,
+    this.colors = const [goldLeaf, cream],
+  });
 
   final double progress;
   final int count;
+  final double reach;
+  final List<Color> colors;
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _FlakePainter(progress, count),
+      painter: _FlakePainter(progress, count, reach, colors),
       child: const SizedBox.expand(),
     );
   }
 }
 
 class _FlakePainter extends CustomPainter {
-  _FlakePainter(this.progress, this.count);
+  _FlakePainter(this.progress, this.count, this.reach, this.colors);
 
   final double progress;
   final int count;
+  final double reach;
+  final List<Color> colors;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -317,17 +327,18 @@ class _FlakePainter extends CustomPainter {
     }
     final center = Offset(size.width / 2, size.height / 2);
     final random = Random(7);
+    final flight = Curves.easeOutCubic.transform(progress.clamp(0.0, 1.0));
     for (var i = 0; i < count; i++) {
       final angle = random.nextDouble() * pi * 2;
-      final travel = 40 + random.nextDouble() * 160;
-      final spot = center + Offset(cos(angle), sin(angle)) * travel * progress;
+      final travel = reach * (0.25 + random.nextDouble() * 0.75);
+      final spot = center + Offset(cos(angle), sin(angle)) * travel * flight;
       final paint = Paint()
-        ..color = (i.isEven ? goldLeaf : cream).withValues(alpha: (1 - progress).clamp(0, 1));
+        ..color = colors[i % colors.length].withValues(alpha: (1 - progress).clamp(0, 1));
       canvas.save();
       canvas.translate(spot.dx, spot.dy);
       canvas.rotate(angle + progress * 2);
       canvas.drawRect(
-        Rect.fromCenter(center: Offset.zero, width: 4 + random.nextDouble() * 6, height: 3),
+        Rect.fromCenter(center: Offset.zero, width: 8 + random.nextDouble() * 10, height: 5),
         paint,
       );
       canvas.restore();
@@ -335,48 +346,99 @@ class _FlakePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _FlakePainter oldDelegate) => oldDelegate.progress != progress;
+  bool shouldRepaint(covariant _FlakePainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.count != count ||
+      oldDelegate.reach != reach ||
+      oldDelegate.colors != colors;
 }
 
 class Sunburst extends StatelessWidget {
-  const Sunburst({super.key, this.turns = 0});
+  const Sunburst({super.key, this.degrees = 0});
 
-  final double turns;
+  final double degrees;
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(painter: _BurstPainter(turns), child: const SizedBox.expand());
+    return CustomPaint(painter: _BurstPainter(degrees), child: const SizedBox.expand());
   }
 }
 
 class _BurstPainter extends CustomPainter {
-  _BurstPainter(this.turns);
+  _BurstPainter(this.degrees);
 
-  final double turns;
+  static const _rays = 16;
+
+  final double degrees;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
+    final reach = size.longestSide;
+    final halfWidth = pi / _rays / 2;
+    final paint = Paint()..color = deepGold.withValues(alpha: 0.28);
     canvas.save();
     canvas.translate(center.dx, center.dy);
-    canvas.rotate(turns * pi / 180);
-    final paint = Paint()..color = deepGold.withValues(alpha: 0.28);
-    for (var i = 0; i < 16; i++) {
-      canvas.rotate(pi / 16);
+    canvas.rotate(degrees * pi / 180);
+    for (var i = 0; i < _rays; i++) {
       canvas.drawPath(
         Path()
           ..moveTo(0, 0)
-          ..lineTo(18, -size.longestSide)
-          ..lineTo(-18, -size.longestSide)
+          ..lineTo(-sin(halfWidth) * reach, -cos(halfWidth) * reach)
+          ..lineTo(sin(halfWidth) * reach, -cos(halfWidth) * reach)
           ..close(),
         paint,
       );
+      canvas.rotate(2 * pi / _rays);
     }
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(covariant _BurstPainter oldDelegate) => oldDelegate.turns != turns;
+  bool shouldRepaint(covariant _BurstPainter oldDelegate) => oldDelegate.degrees != degrees;
+}
+
+class EdgeGlow extends StatelessWidget {
+  const EdgeGlow({super.key, required this.intensity});
+
+  final double intensity;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: CustomPaint(painter: _GlowPainter(intensity), child: const SizedBox.expand()),
+    );
+  }
+}
+
+class _GlowPainter extends CustomPainter {
+  _GlowPainter(this.intensity);
+
+  final double intensity;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (intensity <= 0) {
+      return;
+    }
+    final depth = size.shortestSide * 0.2;
+    final strong = ember.withValues(alpha: 0.75 * intensity.clamp(0.0, 1.0));
+    final clear = ember.withValues(alpha: 0);
+    void band(Rect rect, Alignment from, Alignment to) {
+      canvas.drawRect(
+        rect,
+        Paint()..shader = LinearGradient(begin: from, end: to, colors: [strong, clear]).createShader(rect),
+      );
+    }
+
+    band(Rect.fromLTWH(0, 0, depth, size.height), Alignment.centerLeft, Alignment.centerRight);
+    band(Rect.fromLTWH(size.width - depth, 0, depth, size.height), Alignment.centerRight, Alignment.centerLeft);
+    band(Rect.fromLTWH(0, 0, size.width, depth), Alignment.topCenter, Alignment.bottomCenter);
+    band(Rect.fromLTWH(0, size.height - depth, size.width, depth), Alignment.bottomCenter, Alignment.topCenter);
+  }
+
+  @override
+  bool shouldRepaint(covariant _GlowPainter oldDelegate) => oldDelegate.intensity != intensity;
 }
 
 class CheckDisc extends StatelessWidget {

@@ -72,7 +72,22 @@ class _ReviewScreenState extends State<ReviewScreen> {
       return;
     }
     await controller.seekTo(position);
-    setState(() => _position = position);
+    await controller.play();
+    if (mounted) {
+      setState(() => _position = position);
+    }
+  }
+
+  Future<void> _togglePlayback() async {
+    final controller = _controller;
+    if (controller == null) {
+      return;
+    }
+    if (controller.value.isPlaying) {
+      await controller.pause();
+    } else {
+      await controller.play();
+    }
   }
 
   @override
@@ -102,11 +117,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     )
                   : controller == null
                   ? const Center(child: CircularProgressIndicator(color: goldLeaf))
-                  : AspectRatio(
-                      aspectRatio: controller.value.aspectRatio == 0
-                          ? 16 / 9
-                          : controller.value.aspectRatio,
-                      child: VideoPlayer(controller),
+                  : GestureDetector(
+                      key: const Key('review-video'),
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _togglePlayback,
+                      child: AspectRatio(
+                        aspectRatio: controller.value.aspectRatio == 0
+                            ? 16 / 9
+                            : controller.value.aspectRatio,
+                        child: VideoPlayer(controller),
+                      ),
                     ),
             ),
             ReviewScrubber(
