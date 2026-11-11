@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+
+import '../store/atomic_write.dart';
+import 'moments.dart';
 
 class RecordingStore {
   RecordingStore(this.root);
@@ -7,17 +11,38 @@ class RecordingStore {
 
   Directory get folder => Directory('${root.path}/recordings');
 
-  Future<File> save(File temp, {required String id}) async {
+  Future<File> save(
+    File temp, {
+    required String id,
+    List<RoundMark> marks = const [],
+  }) async {
     if (!temp.existsSync()) {
       throw StateError('Recording file is already gone');
     }
     folder.createSync(recursive: true);
     final saved = File('${folder.path}/$id.mp4');
     saved.writeAsBytesSync(temp.readAsBytesSync(), flush: true);
+    writeAtomically(
+      _sidecar(saved),
+      jsonEncode({'marks': [for (final mark in marks) mark.toJson()]}),
+    );
     if (temp.absolute.path != saved.absolute.path && temp.existsSync()) {
       temp.deleteSync();
     }
     return saved;
+  }
+
+  List<RoundMark> marksFor(File clip) {
+    try {
+      final json = jsonDecode(_sidecar(clip).readAsStringSync());
+      final marks = (json as Map<String, Object?>)['marks'] as List<Object?>? ?? const [];
+      return [
+        for (final entry in marks)
+          if (entry is Map<String, Object?>) RoundMark.fromJson(entry),
+      ];
+    } catch (_) {
+      return const [];
+    }
   }
 
   Future<void> discard(File? temp) async {
@@ -30,9 +55,17 @@ class RecordingStore {
   }
 
   Future<void> deleteSaved(File saved) async {
-    if (saved.existsSync()) {
-      saved.deleteSync();
+    for (final file in [saved, _sidecar(saved)]) {
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
     }
+  }
+
+  File _sidecar(File clip) {
+    final path = clip.path;
+    final stem = path.endsWith('.mp4') ? path.substring(0, path.length - 4) : path;
+    return File('$stem.json');
   }
 
   List<File> savedClips() {

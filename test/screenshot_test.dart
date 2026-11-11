@@ -26,19 +26,26 @@ void main() {
         parseDeck(File(path).readAsStringSync()),
     ];
     final bom = decks.singleWhere((deck) => deck.id == 'bom');
-    const lapis = Color(0xFF1F4BA5);
-    const marks = [
+    final dc = decks.singleWhere((deck) => deck.id == 'dc');
+    GameCard cardOf(Deck deck, String id) =>
+        deck.cards.singleWhere((card) => card.id == id);
+    final typical = cardOf(bom, 'bom-1ne-3-7');
+    final passed = cardOf(bom, 'bom-alma-34-9-10');
+    final longest = cardOf(dc, 'dc-d-c-121-36-41-42');
+    const landscape = Size(812, 375);
+    const sensorHousing = EdgeInsets.fromLTRB(50, 0, 50, 21);
+    final marks = [
       RoundMark(
-        cardId: 'bom-3ne-11-10',
-        prompt: '3 Nephi 11:10',
-        clue: 'He speaks his own name',
+        cardId: typical.id,
+        prompt: typical.prompt,
+        clue: typical.clue,
         correct: true,
         tMs: 4200,
       ),
       RoundMark(
-        cardId: 'bom-alma-32-21',
-        prompt: 'Alma 32:21',
-        clue: 'Hope in what is not seen',
+        cardId: passed.id,
+        prompt: passed.prompt,
+        clue: passed.clue,
         correct: false,
         tMs: 9100,
       ),
@@ -60,7 +67,12 @@ void main() {
       file.writeAsBytesSync(bytes!.buffer.asUint8List());
     }
 
-    Future<void> shoot(String name, Size size, Widget child) async {
+    Future<void> shoot(
+      String name,
+      Size size,
+      Widget child, {
+      EdgeInsets padding = EdgeInsets.zero,
+    }) async {
       await tester.binding.setSurfaceSize(size);
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
@@ -71,7 +83,15 @@ void main() {
           home: Scaffold(
             backgroundColor: ink,
             body: SizedBox.expand(
-              child: RepaintBoundary(key: const Key('shot'), child: child),
+              child: RepaintBoundary(
+                key: const Key('shot'),
+                child: Builder(
+                  builder: (context) => MediaQuery(
+                    data: MediaQuery.of(context).copyWith(padding: padding),
+                    child: child,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -117,37 +137,38 @@ void main() {
     );
     await shoot(
       '03-forehead',
-      const Size(900, 420),
+      landscape,
       const ForeheadView(
         roundNumber: 1,
         armProgress: 0.65,
         tapMode: false,
         recording: true,
         onStart: _noop,
+        onLeave: _noop,
       ),
+      padding: sensorHousing,
     );
     await shoot(
       '04-countdown',
-      const Size(900, 420),
+      landscape,
       const CountdownView(
         roundNumber: 1,
         numeral: 2,
         progress: 0.4,
         recording: true,
       ),
+      padding: sensorHousing,
     );
-    await shoot(
-      '05-card',
-      const Size(900, 420),
-      CardPlayView(
-        color: lapis,
-        prompt: '3 Nephi 11:10',
-        clue: 'He speaks his own name',
+    CardPlayView cardView(GameCard card, Deck deck, {bool tap = false}) {
+      return CardPlayView(
+        color: deck.hero,
+        prompt: card.prompt,
+        clue: card.clue,
         got: 3,
         timeLeft: const Duration(seconds: 42),
-        deckName: 'Book of Mormon',
+        deckName: deck.name,
         recording: false,
-        tapMode: false,
+        tapMode: tap,
         urgent: false,
         urgentFast: false,
         pauseProgress: 0,
@@ -155,33 +176,102 @@ void main() {
         onPass: () {},
         onPauseDown: () {},
         onPauseUp: () {},
+      );
+    }
+
+    await shoot(
+      '05-card',
+      landscape,
+      cardView(typical, bom),
+      padding: sensorHousing,
+    );
+    await shoot(
+      '05-card-longest',
+      landscape,
+      cardView(longest, dc),
+      padding: sensorHousing,
+    );
+    await shoot(
+      '05-card-urgent',
+      landscape,
+      CardPlayView(
+        color: bom.hero,
+        prompt: typical.prompt,
+        clue: typical.clue,
+        got: 7,
+        timeLeft: const Duration(milliseconds: 4100),
+        deckName: bom.name,
+        recording: false,
+        tapMode: false,
+        urgent: true,
+        urgentFast: true,
+        pauseProgress: 0,
+        glow: 0.85,
+        onCorrect: () {},
+        onPass: () {},
+        onPauseDown: () {},
+        onPauseUp: () {},
       ),
+      padding: sensorHousing,
+    );
+    await shoot(
+      '05-card-longest-tap',
+      landscape,
+      cardView(longest, dc, tap: true),
+      padding: sensorHousing,
     );
     await shoot(
       '06-correct',
-      const Size(900, 420),
-      const CorrectFlashView(
-        prompt: '3 Nephi 11:10',
-        timeLeft: Duration(seconds: 41),
+      landscape,
+      CorrectFlashView(
+        prompt: typical.prompt,
+        timeLeft: const Duration(seconds: 41),
         reduceMotion: false,
+        progress: 0.3,
       ),
+      padding: sensorHousing,
     );
     await shoot(
       '07-pass',
-      const Size(900, 420),
-      const PassFlashView(
-        prompt: 'Alma 32:21',
-        timeLeft: Duration(seconds: 37),
+      landscape,
+      PassFlashView(
+        prompt: passed.prompt,
+        timeLeft: const Duration(seconds: 37),
+        progress: 0.5,
       ),
+      padding: sensorHousing,
     );
     await shoot(
       '08-time-up',
-      const Size(900, 420),
+      landscape,
+      TimeUpView(
+        headline: "TIME'S UP",
+        score: 8,
+        revealPrompt: typical.prompt,
+        revealClue: typical.clue,
+      ),
+      padding: sensorHousing,
+    );
+    await shoot(
+      '08-time-up-longest',
+      landscape,
+      TimeUpView(
+        headline: "TIME'S UP",
+        score: 12,
+        revealPrompt: longest.prompt,
+        revealClue: longest.clue,
+      ),
+      padding: sensorHousing,
+    );
+    await shoot(
+      '08-time-up-no-card',
+      landscape,
       const TimeUpView(headline: "TIME'S UP", score: 8),
+      padding: sensorHousing,
     );
     await shoot(
       '09-results',
-      const Size(900, 420),
+      landscape,
       ResultsView(
         headline: "TIME'S UP",
         score: 8,
@@ -207,6 +297,7 @@ void main() {
           canDelete: true,
         ),
       ),
+      padding: sensorHousing,
     );
     final libraryRoot = (await tester.runAsync(
       () => Directory.systemTemp.createTemp('scripture-up-shots'),
@@ -219,6 +310,7 @@ void main() {
 
     await tester.binding.setSurfaceSize(null);
     expect(File('artifacts/screens/05-card.png').existsSync(), isTrue);
+    expect(File('artifacts/screens/05-card-longest.png').existsSync(), isTrue);
     expect(
       File('artifacts/screens/09-results.png').lengthSync(),
       greaterThan(1000),

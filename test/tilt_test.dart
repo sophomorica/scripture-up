@@ -117,6 +117,27 @@ void main() {
     expect(fires, 35);
   });
 
+  test('requireLevel holds fire until the phone has been level for the re-arm dwell', () {
+    final detector = TiltDetector(config: exact);
+    detector.requireLevel();
+    final tilted = hold(detector, -55, Duration.zero, const Duration(milliseconds: 500));
+    expect(tilted.fired, isNull);
+    expect(tilted.phase, DetectorPhase.rearming);
+
+    final brief = detector.ingest(pose(0, const Duration(milliseconds: 600)));
+    expect(brief.phase, DetectorPhase.rearming);
+    final level = detector.ingest(pose(0, const Duration(milliseconds: 800)));
+    expect(level.phase, DetectorPhase.neutral);
+
+    final fired = hold(
+      detector,
+      -55,
+      const Duration(milliseconds: 800),
+      const Duration(milliseconds: 60),
+    );
+    expect(fired.fired, TiltBand.correct);
+  });
+
   test('a scripted sensor is the tilt interface the detector reads', () async {
     final script = Stream<AccelSample>.fromIterable([
       pose(0, Duration.zero),

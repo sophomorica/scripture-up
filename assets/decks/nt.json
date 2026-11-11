@@ -1,11 +1,11 @@
 {
   "id": "nt",
   "name": "New Testament",
-  "pitch": "Gospels, letters, and the road to Damascus.",
+  "pitch": "Your team reads the phrase. You name the verse. Gospels and letters.",
   "heroColor": "#0E6B6B",
   "emblem": "waves",
   "format": "reference",
-  "status": "soon",
+  "status": "live",
   "cards": [
     {
       "id": "nt-matthew-5-14-16",

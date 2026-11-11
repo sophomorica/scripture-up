@@ -72,6 +72,14 @@ class TiltDetector {
     _levelSince = null;
   }
 
+  void requireLevel() {
+    phase = DetectorPhase.rearming;
+    _holding = null;
+    _holdStart = null;
+    _firedAt = null;
+    _levelSince = null;
+  }
+
   TiltTick ingest(AccelSample sample, {bool detect = true}) {
     final alpha = config.alpha;
     _sx = _sx == null ? sample.x : alpha * sample.x + (1 - alpha) * _sx!;
@@ -117,7 +125,7 @@ class TiltDetector {
         } else {
           _levelSince ??= sample.at;
           final lockoutDone =
-              _firedAt != null && sample.at - _firedAt! >= config.lockout;
+              _firedAt == null || sample.at - _firedAt! >= config.lockout;
           final dwellDone = sample.at - _levelSince! >= config.rearmDwell;
           if (lockoutDone && dwellDone) {
             phase = DetectorPhase.neutral;

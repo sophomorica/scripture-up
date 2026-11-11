@@ -255,14 +255,21 @@ class _Row extends StatelessWidget {
                 ),
                 if (open) ...[
                   const SizedBox(height: 4),
-                  Text('“${mark.clue}”', style: fraunces(14, navy, italic: true, weight: 600, height: 1.15)),
+                  Text(mark.clue, style: fraunces(14, navy, italic: true, weight: 600, height: 1.15)),
                   if (hasRecording)
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton(
                         key: Key('jump-${mark.cardId}'),
                         onPressed: () => onJump(mark),
-                        child: Text('▶ ${formatMark(mark.tMs)}', style: condensed(14, color: navy, tracking: 0.6)),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.play_arrow_rounded, color: navy, size: 18),
+                            const SizedBox(width: 2),
+                            Text(formatMark(mark.tMs), style: condensed(14, color: navy, tracking: 0.6)),
+                          ],
+                        ),
                       ),
                     ),
                 ],

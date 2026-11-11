@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:scripture_up/recording/moments.dart';
 import 'package:scripture_up/recording/recording_store.dart';
 
 void main() {
@@ -73,5 +74,52 @@ void main() {
       'round-20260923-225501-001.mp4',
       'round-20260923-224955-001.mp4',
     ]);
+  });
+
+  test('a kept clip stores its marks beside it and deleting removes both files', () async {
+    final temp = File('${root.path}/incoming.mp4');
+    await temp.writeAsBytes(const [5]);
+    const marks = [
+      RoundMark(cardId: 'a', prompt: 'A', clue: 'clue a', correct: true, tMs: 4200),
+      RoundMark(cardId: 'b', prompt: 'B', clue: 'clue b', correct: false, tMs: 9100),
+    ];
+    final saved = await store.save(temp, id: 'round-20260923-224955-001', marks: marks);
+
+    final loaded = store.marksFor(saved);
+    expect(loaded.map((mark) => mark.cardId), ['a', 'b']);
+    expect(loaded.map((mark) => mark.tMs), [4200, 9100]);
+    expect(loaded.map((mark) => mark.correct), [true, false]);
+    expect(root.listSync(recursive: true).whereType<File>(), hasLength(2));
+
+    await store.deleteSaved(saved);
+    expect(root.listSync(recursive: true).whereType<File>(), isEmpty);
+    expect(store.marksFor(saved), isEmpty);
+  });
+
+  test('marks read as empty when the sidecar is missing or corrupt', () async {
+    final temp = File('${root.path}/incoming.mp4');
+    await temp.writeAsBytes(const [5]);
+    final saved = await store.save(temp, id: 'round-20260923-224955-002');
+    expect(store.marksFor(saved), isEmpty);
+
+    File('${saved.path.substring(0, saved.path.length - 4)}.json')
+        .writeAsStringSync('{"marks": [');
+    expect(store.marksFor(saved), isEmpty);
+  });
+
+  test('a clip folder whose name contains .mp4 still pairs the sidecar by extension', () async {
+    final odd = RecordingStore(Directory('${root.path}/x.mp4.d')..createSync());
+    final temp = File('${root.path}/incoming.mp4');
+    await temp.writeAsBytes(const [5]);
+    final saved = await odd.save(
+      temp,
+      id: 'round-20260923-224955-003',
+      marks: const [
+        RoundMark(cardId: 'a', prompt: 'A', clue: 'c', correct: true, tMs: 1),
+      ],
+    );
+    expect(odd.marksFor(saved), hasLength(1));
+    await odd.deleteSaved(saved);
+    expect(odd.folder.listSync(), isEmpty);
   });
 }

@@ -7,7 +7,9 @@ import 'package:scripture_up/app.dart';
 import 'package:scripture_up/feedback/game_audio.dart';
 import 'package:scripture_up/feedback/game_haptics.dart';
 import 'package:scripture_up/game/deck.dart';
+import 'package:scripture_up/feedback/screen_wake.dart';
 import 'package:scripture_up/game/tilt_sensor.dart';
+import 'package:scripture_up/recording/round_recorder.dart';
 
 import 'support/fake_recorder.dart';
 
@@ -20,6 +22,9 @@ List<Deck> loadDecks() {
 Future<Directory> pumpGame(
   WidgetTester tester, {
   bool failCamera = false,
+  List<Deck>? decks,
+  RoundRecorder Function(Directory directory)? recorder,
+  ScreenWake? wake,
 }) async {
   final directory = (await tester.runAsync(
     () => Directory.systemTemp.createTemp('scripture-up-ui'),
@@ -34,11 +39,14 @@ Future<Directory> pumpGame(
   await tester.pumpWidget(
     ScriptureUpApp(
       documentsDirectory: directory,
-      decks: loadDecks(),
+      decks: decks ?? loadDecks(),
       sensor: ScriptedTiltSensor(const Stream<AccelSample>.empty()),
       audio: SilentAudio(),
       haptics: SilentHaptics(),
-      recorderFactory: () => FakeRoundRecorder(directory, fail: failCamera),
+      wake: wake,
+      recorderFactory: () =>
+          recorder?.call(directory) ??
+          FakeRoundRecorder(directory, fail: failCamera),
       clock: () => DateTime(2026, 9, 23, 22, 49, 55, 10),
       elapsed: () => tester.binding.clock.now().difference(origin),
       random: () => Random(1),
@@ -102,7 +110,6 @@ void main() {
     expect(find.text('Book of Mormon'), findsOneWidget);
     expect(find.text('24 CARDS · REFERENCE + CLUE'), findsOneWidget);
     expect(find.text('NARROW ROAD STUDIOS'), findsOneWidget);
-    expect(find.text('COMING SOON'), findsNothing);
     expect(find.byKey(const Key('book-all')), findsOneWidget);
     expect(
       find.text('Not affiliated with The Church of Jesus Christ of Latter-day Saints.'),
@@ -119,10 +126,16 @@ void main() {
       await tester.drag(find.byKey(const Key('lobby-scroll')), const Offset(0, -280));
       await tester.pump();
     }
+    expect(
+      find.descendant(of: people, matching: find.text('COMING SOON')),
+      findsOneWidget,
+    );
     await tester.tap(people);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.textContaining('not live yet'), findsOneWidget);
+    expect(find.textContaining('picker'), findsOneWidget);
+    expect(find.textContaining('Book of Mormon is the one'), findsNothing);
     expect(find.byKey(const Key('sheet-play')), findsNothing);
   });
 
@@ -228,8 +241,11 @@ void main() {
     expect(find.byKey(const Key('save-recording')), findsOneWidget);
     await tester.tap(find.text('TAP').first);
     await tester.pump();
-    await tester.ensureVisible(find.textContaining('▶'));
-    await tester.tap(find.textContaining('▶'));
+    final jump = find.byWidgetPredicate(
+      (widget) => widget.key.toString().contains('jump-'),
+    );
+    await tester.ensureVisible(jump);
+    await tester.tap(jump);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump();
@@ -268,6 +284,14 @@ void main() {
     await tester.tap(find.byKey(const Key('confirm-delete-saved')));
     await flushIo(tester);
     expect(find.byKey(const Key('library-empty')), findsOneWidget);
+    expect(
+      directory
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((file) => file.path.contains('/recordings/')),
+      isEmpty,
+      reason: 'the clip and its marks file are both gone',
+    );
   });
 
   testWidgets('leaving with an unsaved clip asks before it deletes', (tester) async {

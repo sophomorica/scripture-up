@@ -23,19 +23,13 @@ class CameraRoundRecorder implements RoundRecorder {
         orElse: () => null,
       );
       final camera = front ?? cameras.first;
-      final opened = await _open(camera);
-      if (!opened) {
-        return const RecorderStart(
-          recording: false,
-          reason: 'Camera could not start. The round still plays.',
-        );
-      }
+      await _open(camera);
       await _controller!.startVideoRecording();
       _capturing = true;
       return const RecorderStart(recording: true);
     } on CameraException catch (error) {
       await _tearDown();
-      return RecorderStart(recording: false, reason: _reason(error));
+      return RecorderStart(recording: false, reason: cameraFailureReason(error));
     } catch (_) {
       await _tearDown();
       return const RecorderStart(
@@ -45,31 +39,40 @@ class CameraRoundRecorder implements RoundRecorder {
     }
   }
 
-  Future<bool> _open(CameraDescription camera) async {
+  Future<void> _open(CameraDescription camera) async {
     try {
-      await _attach(camera, fps: 24, videoBitrate: 800000);
-      return true;
-    } catch (_) {
-      await _dropController();
-      try {
-        await _attach(camera);
-        return true;
-      } catch (_) {
-        await _tearDown();
-        return false;
+      await _attachTuned(camera, audio: true);
+    } on CameraException catch (error) {
+      if (!_audioPermission.contains(error.code)) {
+        rethrow;
       }
+      await _dropController();
+      await _attachTuned(camera, audio: false);
+    }
+  }
+
+  Future<void> _attachTuned(CameraDescription camera, {required bool audio}) async {
+    try {
+      await _attach(camera, audio: audio, fps: 24, videoBitrate: 800000);
+    } catch (error) {
+      if (error is CameraException && _isPermission(error.code)) {
+        rethrow;
+      }
+      await _dropController();
+      await _attach(camera, audio: audio);
     }
   }
 
   Future<void> _attach(
     CameraDescription camera, {
+    required bool audio,
     int? fps,
     int? videoBitrate,
   }) async {
     final controller = CameraController(
       camera,
       ResolutionPreset.low,
-      enableAudio: true,
+      enableAudio: audio,
       fps: fps,
       videoBitrate: videoBitrate,
       audioBitrate: 64000,
@@ -109,12 +112,34 @@ class CameraRoundRecorder implements RoundRecorder {
 
   Future<void> _tearDown() => _dropController();
 
-  String _reason(CameraException error) {
-    if (error.code == 'CameraAccessDenied' ||
-        error.code == 'AudioAccessDenied' ||
-        error.code == 'CameraAccessDeniedWithoutPrompt') {
-      return 'Camera permission is off. The round still plays.';
-    }
-    return 'Camera could not start. The round still plays.';
-  }
+  bool _isPermission(String code) =>
+      _audioPermission.contains(code) || _cameraPermission.contains(code);
+}
+
+const _cameraPermission = {
+  'CameraAccessDenied',
+  'CameraAccessDeniedWithoutPrompt',
+  'CameraAccessRestricted',
+};
+
+const _audioPermission = {
+  'AudioAccessDenied',
+  'AudioAccessDeniedWithoutPrompt',
+  'AudioAccessRestricted',
+};
+
+String cameraFailureReason(CameraException error) {
+  return switch (error.code) {
+    'CameraAccessDenied' ||
+    'CameraAccessDeniedWithoutPrompt' =>
+      'Camera permission is off. The round still plays.',
+    'CameraAccessRestricted' =>
+      'Camera access is restricted on this phone. The round still plays.',
+    'AudioAccessDenied' ||
+    'AudioAccessDeniedWithoutPrompt' =>
+      'Microphone permission is off. The round still plays.',
+    'AudioAccessRestricted' =>
+      'Microphone access is restricted on this phone. The round still plays.',
+    _ => 'Camera could not start. The round still plays.',
+  };
 }

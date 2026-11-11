@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'atomic_write.dart';
+
 class BestStore {
   BestStore(this.file);
 
@@ -19,19 +21,25 @@ class BestStore {
       return;
     }
     map[key] = score;
-    file.parent.createSync(recursive: true);
-    await file.writeAsString(jsonEncode(map));
+    writeAtomically(file, jsonEncode(map));
   }
 
   Map<String, int> _load() {
-    if (!file.existsSync()) {
+    final Object? decoded;
+    try {
+      decoded = jsonDecode(file.readAsStringSync());
+    } on FileSystemException {
+      return {};
+    } on FormatException {
       return {};
     }
-    final decoded = jsonDecode(file.readAsStringSync());
     if (decoded is! Map) {
       return {};
     }
-    return decoded.map((key, value) => MapEntry('$key', value as int));
+    return {
+      for (final entry in decoded.entries)
+        if (entry.value is int) '${entry.key}': entry.value as int,
+    };
   }
 }
 
@@ -43,17 +51,20 @@ class PlayPrefs {
   bool respectSilence = true;
 
   void load() {
-    if (!file.existsSync()) {
+    final Object? decoded;
+    try {
+      decoded = jsonDecode(file.readAsStringSync());
+    } on FileSystemException {
+      return;
+    } on FormatException {
       return;
     }
-    final decoded = jsonDecode(file.readAsStringSync());
     if (decoded is Map && decoded['respectSilence'] is bool) {
       respectSilence = decoded['respectSilence'] as bool;
     }
   }
 
   Future<void> save() async {
-    file.parent.createSync(recursive: true);
-    await file.writeAsString(jsonEncode({'respectSilence': respectSilence}));
+    writeAtomically(file, jsonEncode({'respectSilence': respectSilence}));
   }
 }

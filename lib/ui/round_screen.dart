@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -9,6 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../feedback/game_audio.dart';
 import '../feedback/game_haptics.dart';
+import '../feedback/screen_wake.dart';
 import '../game/deck.dart';
 import '../game/round_controller.dart';
 import '../game/tilt_sensor.dart';
@@ -17,6 +17,7 @@ import '../recording/moments.dart';
 import '../recording/recording_store.dart';
 import '../recording/round_recorder.dart';
 import '../store/bests.dart';
+import 'draw.dart';
 import 'results_view.dart';
 import 'review_screen.dart';
 import 'round_views.dart';
@@ -32,6 +33,7 @@ class RoundScreen extends StatefulWidget {
     required this.sensor,
     required this.audio,
     required this.haptics,
+    required this.wake,
     required this.now,
     this.roundNumber = 1,
     this.tapMode = false,
@@ -48,6 +50,7 @@ class RoundScreen extends StatefulWidget {
   final TiltSensor sensor;
   final GameAudio audio;
   final GameHaptics haptics;
+  final ScreenWake wake;
   final Duration Function() now;
   final int roundNumber;
   final bool tapMode;
@@ -60,7 +63,7 @@ class RoundScreen extends StatefulWidget {
 }
 
 class _RoundScreenState extends State<RoundScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late RoundController _round;
   late ClipSession _clips;
   late final Ticker _ticker;
@@ -70,6 +73,8 @@ class _RoundScreenState extends State<RoundScreen>
   var _recordingFinished = false;
   var _bestWritten = false;
   var _leaving = false;
+  var _busy = false;
+  final _seen = <String>{};
   int? _expanded;
 
   @override
@@ -79,6 +84,8 @@ class _RoundScreenState extends State<RoundScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    unawaited(widget.wake.hold());
+    WidgetsBinding.instance.addObserver(this);
     _roundNumber = widget.roundNumber;
     _clips = _openClips();
     _boot(const {});
@@ -88,10 +95,21 @@ class _RoundScreenState extends State<RoundScreen>
     });
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _round.foreground(widget.now());
+    } else {
+      _round.background();
+    }
+  }
+
   ClipSession _openClips() {
     final session = ClipSession(
       recorderFactory: widget.recorderFactory,
       store: widget.store,
+      elapsed: widget.now,
+      onStopped: widget.audio.restoreSession,
       clock: widget.clock,
     );
     session.addListener(_onClip);
@@ -179,6 +197,8 @@ class _RoundScreenState extends State<RoundScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(widget.wake.release());
     _ticker.dispose();
     unawaited(_samples?.cancel() ?? Future<void>.value());
     _round.removeListener(_onRound);
@@ -204,73 +224,94 @@ class _RoundScreenState extends State<RoundScreen>
     };
   }
 
+  Future<bool> _settleClip() async {
+    if (_round.phase != RoundPhase.results) {
+      return true;
+    }
+    if (_recordingStarted) {
+      await _clips.finish();
+    }
+    if (!mounted || _clips.clip is! ClipPending) {
+      return mounted;
+    }
+    final keep = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Keep this video?'),
+          content: const Text('Save it on this phone, or delete it.'),
+          actions: [
+            TextButton(
+              key: const Key('confirm-delete'),
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Delete'),
+            ),
+            TextButton(
+              key: const Key('confirm-save'),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+    if (keep == null || !mounted) {
+      return false;
+    }
+    if (keep) {
+      await _clips.save(marks: _round.marks);
+    } else {
+      await _clips.delete();
+    }
+    return mounted;
+  }
+
   Future<void> _playAgain() async {
-    final unseen = _round.unseenIds;
-    await _clips.abandon();
-    _round.removeListener(_onRound);
-    _round.dispose();
-    _clips.removeListener(_onClip);
-    _clips.dispose();
-    _clips = _openClips();
-    setState(() {
-      _roundNumber += 1;
-      _boot(unseen);
-    });
+    if (_busy) {
+      return;
+    }
+    _busy = true;
+    try {
+      if (!await _settleClip()) {
+        return;
+      }
+      await _clips.abandon();
+      if (!mounted) {
+        return;
+      }
+      final deckIds = {for (final card in widget.deck.cards) card.id};
+      _seen.addAll(_round.marks.map((mark) => mark.cardId));
+      if (_seen.containsAll(deckIds)) {
+        _seen.clear();
+      }
+      _round.removeListener(_onRound);
+      _round.dispose();
+      _clips.removeListener(_onClip);
+      _clips.dispose();
+      _clips = _openClips();
+      setState(() {
+        _roundNumber += 1;
+        _boot(deckIds.difference(_seen));
+      });
+    } finally {
+      _busy = false;
+    }
   }
 
   Future<void> _leave({required bool home}) async {
-    if (_leaving) {
+    if (_busy || _leaving) {
       return;
     }
-    if (_round.phase == RoundPhase.results && _clips.clip is ClipPending) {
-      final keep = await showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Keep this video?'),
-            content: const Text('Save it on this phone, or delete it.'),
-            actions: [
-              TextButton(
-                key: const Key('confirm-delete'),
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Delete'),
-              ),
-              TextButton(
-                key: const Key('confirm-save'),
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Save'),
-              ),
-            ],
-          );
-        },
-      );
-      if (keep == null || !mounted) {
+    _busy = true;
+    try {
+      if (!await _settleClip() || !mounted) {
         return;
       }
-      if (keep) {
-        await _save();
-      } else {
-        await _clips.delete();
-      }
-    }
-    _leaving = true;
-    if (mounted) {
+      _leaving = true;
       Navigator.of(context).pop(home);
+    } finally {
+      _busy = false;
     }
-  }
-
-  Future<void> _save() async {
-    await _clips.save();
-    final file = _clipFile;
-    if (file == null) {
-      return;
-    }
-    final sidecar = File(file.path.replaceAll('.mp4', '.json'));
-    sidecar.writeAsStringSync(
-      jsonEncode({
-        'marks': [for (final mark in _round.marks) mark.toJson()],
-      }),
-    );
   }
 
   Future<void> _deleteClip() async {
@@ -308,7 +349,7 @@ class _RoundScreenState extends State<RoundScreen>
       MaterialPageRoute<void>(
         builder: (_) => ReviewScreen(
           file: file,
-          marks: _round.marks,
+          marks: _clips.marksOnClip(_round.marks),
           initialSeek: seek,
         ),
       ),
@@ -332,6 +373,13 @@ class _RoundScreenState extends State<RoundScreen>
     );
   }
 
+  double _glowIntensity(bool reduce) {
+    if (!_round.urgent) {
+      return 0;
+    }
+    return reduce ? 0.3 : _round.urgencyPulse;
+  }
+
   Widget _body(bool reduce) {
     final phase = _round.phase;
     final card = _round.current;
@@ -342,12 +390,14 @@ class _RoundScreenState extends State<RoundScreen>
         tapMode: widget.tapMode,
         recording: _clips.live,
         onStart: _round.tapStart,
+        onLeave: () => unawaited(_leave(home: true)),
       ),
       RoundPhase.countdown => CountdownView(
         roundNumber: _roundNumber,
         numeral: _round.numeral,
         progress: _round.beatProgress,
         recording: _clips.live,
+        reduceMotion: reduce,
       ),
       RoundPhase.card || RoundPhase.paused => Stack(
         fit: StackFit.expand,
@@ -365,6 +415,7 @@ class _RoundScreenState extends State<RoundScreen>
             urgentFast: _round.urgentFast,
             pauseProgress: _round.pauseProgress,
             reduceMotion: reduce,
+            glow: _glowIntensity(reduce),
             onCorrect: _round.tapCorrect,
             onPass: _round.tapPass,
             onPauseDown: _round.beginPauseHold,
@@ -374,18 +425,35 @@ class _RoundScreenState extends State<RoundScreen>
             PauseScrim(onResume: _round.resume, onEnd: _round.endEarly),
         ],
       ),
-      RoundPhase.correct => CorrectFlashView(
-        prompt: card?.prompt ?? '',
-        timeLeft: _round.timeLeft,
-        reduceMotion: reduce,
+      RoundPhase.correct => Stack(
+        fit: StackFit.expand,
+        children: [
+          CorrectFlashView(
+            prompt: card?.prompt ?? '',
+            timeLeft: _round.timeLeft,
+            reduceMotion: reduce,
+            progress: _round.flashProgress,
+          ),
+          EdgeGlow(intensity: _glowIntensity(reduce)),
+        ],
       ),
-      RoundPhase.pass => PassFlashView(
-        prompt: card?.prompt ?? '',
-        timeLeft: _round.timeLeft,
+      RoundPhase.pass => Stack(
+        fit: StackFit.expand,
+        children: [
+          PassFlashView(
+            prompt: card?.prompt ?? '',
+            timeLeft: _round.timeLeft,
+            reduceMotion: reduce,
+            progress: _round.flashProgress,
+          ),
+          EdgeGlow(intensity: _glowIntensity(reduce)),
+        ],
       ),
       RoundPhase.timeUp => TimeUpView(
         headline: _round.headline,
-        score: _round.got,
+        score: _round.shownScore,
+        revealPrompt: _round.revealed?.prompt,
+        revealClue: _round.revealed?.clue,
       ),
       RoundPhase.results => ResultsView(
         headline: _round.headline,
@@ -395,7 +463,7 @@ class _RoundScreenState extends State<RoundScreen>
         passed: _round.passed,
         bestLabel: _round.bestLabel,
         newBest: _round.newBest,
-        marks: _round.marks,
+        marks: _clips.marksOnClip(_round.marks),
         expanded: _expanded,
         hasRecording: _hasFile,
         reduceMotion: reduce,
@@ -434,7 +502,7 @@ class _RoundScreenState extends State<RoundScreen>
         canSave: true,
         canDelete: true,
         onWatch: () => unawaited(_watch(Duration.zero)),
-        onSave: () => unawaited(_save()),
+        onSave: () => unawaited(_clips.save(marks: _round.marks)),
         onDelete: () => unawaited(_deleteClip()),
       ),
       ClipSaved() => RecordingStrip(

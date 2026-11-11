@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import 'moments.dart';
 import 'recording_store.dart';
 import 'round_recorder.dart';
 
@@ -40,15 +41,20 @@ class ClipSession extends ChangeNotifier {
   ClipSession({
     required this.recorderFactory,
     required this.store,
+    required this._elapsed,
+    this.onStopped,
     DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now;
 
   final RoundRecorder Function() recorderFactory;
   final RecordingStore store;
+  final Future<void> Function()? onStopped;
+  final Duration Function() _elapsed;
   final DateTime Function() _clock;
 
   RoundClip clip = const ClipOff();
   var live = false;
+  Duration? origin;
 
   RoundRecorder? _recorder;
   Future<RecorderStart>? _startup;
@@ -65,6 +71,7 @@ class ClipSession extends ChangeNotifier {
     _sealFuture = null;
     _discard = false;
     live = false;
+    origin = null;
     clip = const ClipOff();
     final recorder = recorderFactory();
     _recorder = recorder;
@@ -83,12 +90,24 @@ class ClipSession extends ChangeNotifier {
 
   Future<void> dropUnsaved() => _dropPending();
 
-  Future<void> save() async {
+  List<RoundMark> marksOnClip(List<RoundMark> marks) {
+    final start = origin;
+    if (start == null) {
+      return marks;
+    }
+    return [for (final mark in marks) mark.onClip(start)];
+  }
+
+  Future<void> save({List<RoundMark> marks = const []}) async {
     final current = clip;
     if (current is! ClipPending) {
       return;
     }
-    final saved = await store.save(current.file, id: clipId(_clock()));
+    final saved = await store.save(
+      current.file,
+      id: clipId(_clock()),
+      marks: marksOnClip(marks),
+    );
     clip = ClipSaved(saved);
     _notify();
   }
@@ -119,6 +138,7 @@ class ClipSession extends ChangeNotifier {
         return const RecorderStart(recording: false);
       }
       if (result.recording && !_discard && !_closed) {
+        origin = _elapsed();
         live = true;
         _notify();
       } else if (!result.recording && !_closed && !_discard) {
@@ -160,6 +180,7 @@ class ClipSession extends ChangeNotifier {
       } catch (_) {
         file = null;
       }
+      await onStopped?.call();
     }
     if (_closed || _discard) {
       if (file != null) {

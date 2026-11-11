@@ -22,25 +22,20 @@ class DeviceGameAudio implements GameAudio {
     }
   }
 
-  Future<void> _applyContext() async {
-    if (!respectSilence) {
-      return;
-    }
-    await AudioPlayer.global.setAudioContext(
-      AudioContext(
-        iOS: AudioContextIOS(category: AVAudioSessionCategory.ambient),
-        android: const AudioContextAndroid(
-          contentType: AndroidContentType.sonification,
-          usageType: AndroidUsageType.game,
-          audioFocus: AndroidAudioFocus.none,
-        ),
-      ),
+  Future<void> _applyContext() {
+    return AudioPlayer.global.setAudioContext(
+      audioContextFor(respectSilence: respectSilence),
     );
   }
 
   @override
   Future<void> setRespectSilence(bool respect) async {
     respectSilence = respect;
+    await restoreSession();
+  }
+
+  @override
+  Future<void> restoreSession() async {
     try {
       await _applyContext();
     } catch (_) {}
@@ -58,4 +53,22 @@ class DeviceGameAudio implements GameAudio {
       await player.resume();
     } catch (_) {}
   }
+}
+
+AudioContext audioContextFor({required bool respectSilence}) {
+  return AudioContext(
+    iOS: AudioContextIOS(
+      category: respectSilence
+          ? AVAudioSessionCategory.ambient
+          : AVAudioSessionCategory.playback,
+      options: respectSilence
+          ? const {}
+          : const {AVAudioSessionOptions.mixWithOthers},
+    ),
+    android: const AudioContextAndroid(
+      contentType: AndroidContentType.sonification,
+      usageType: AndroidUsageType.game,
+      audioFocus: AndroidAudioFocus.none,
+    ),
+  );
 }

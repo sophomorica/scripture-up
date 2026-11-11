@@ -101,10 +101,12 @@ class _LobbyScreenState extends State<LobbyScreen> {
                 ],
               ),
               const SizedBox(height: 18),
-              Row(
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                runSpacing: 8,
                 children: [
                   Text('ROUND', style: condensed(13, color: gold, tracking: 2)),
-                  const Spacer(),
                   _LengthControl(length: widget.length, onChanged: widget.onLength),
                 ],
               ),
@@ -128,42 +130,31 @@ class _LobbyScreenState extends State<LobbyScreen> {
                 ],
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  for (final deck in _group(canonDeckIds)) ...[
-                    Expanded(
-                      child: _DeckTile(
-                        deck: bookDeck(widget.decks, deck.id) ?? deck,
-                        onTap: () => _pick(deck.id),
-                      ),
+              ..._tileRows(
+                [
+                  for (final deck in _group(canonDeckIds))
+                    _DeckTile(
+                      deck: bookDeck(widget.decks, deck.id) ?? deck,
+                      onTap: () => _pick(deck.id),
                     ),
-                    if (deck != _group(canonDeckIds).last) const SizedBox(width: 10),
-                  ],
                 ],
+                columns: 3,
               ),
               const SizedBox(height: 22),
               Row(
                 children: [
                   Text('PARTY DECKS', style: condensed(13, color: gold, tracking: 2)),
                   const Spacer(),
-                  Text('new', style: body(13, color: cream.withValues(alpha: 0.7))),
+                  Text('next up', style: body(13, color: cream.withValues(alpha: 0.7))),
                 ],
               ),
               const SizedBox(height: 10),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 1.2,
-                children: [
+              ..._tileRows(
+                [
                   for (final deck in _group(partyDeckIds))
-                    _DeckTile(
-                      deck: deck,
-                      onTap: () => widget.onOpen(deck),
-                    ),
+                    _DeckTile(deck: deck, onTap: () => widget.onOpen(deck)),
                 ],
+                columns: 2,
               ),
             ],
           ),
@@ -171,6 +162,30 @@ class _LobbyScreenState extends State<LobbyScreen> {
       ),
     );
   }
+}
+
+List<Widget> _tileRows(List<Widget> tiles, {required int columns}) {
+  return [
+    for (var start = 0; start < tiles.length; start += columns)
+      Padding(
+        padding: EdgeInsets.only(top: start == 0 ? 0 : 10),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < columns; i++) ...[
+                if (i > 0) const SizedBox(width: 10),
+                Expanded(
+                  child: start + i < tiles.length
+                      ? tiles[start + i]
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+  ];
 }
 
 class _BookPicker extends StatelessWidget {
@@ -382,7 +397,7 @@ class _DeckTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final closed = deck.status == DeckStatus.soon;
+    final closed = !deck.playable;
     final body = Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       child: Column(
@@ -390,17 +405,10 @@ class _DeckTile extends StatelessWidget {
         children: [
           Emblem(name: deck.emblem, size: 22),
           const SizedBox(height: 6),
-          Text(
-            deck.name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: fraunces(16, cream, weight: 800, height: 1),
-          ),
+          Text(deck.name, style: fraunces(16, cream, weight: 800, height: 1)),
           const SizedBox(height: 4),
           Text(
             closed ? 'COMING SOON' : '${deck.cardCount} CARDS',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: condensed(11, tracking: 0.6),
           ),
           if (!closed)
@@ -411,7 +419,7 @@ class _DeckTile extends StatelessWidget {
         ],
       ),
     );
-    final tile = Material(
+    return Material(
       color: deck.hero,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
@@ -421,6 +429,5 @@ class _DeckTile extends StatelessWidget {
         child: closed ? Hatch(child: body) : body,
       ),
     );
-    return tile;
   }
 }

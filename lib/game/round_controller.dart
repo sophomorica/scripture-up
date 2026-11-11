@@ -16,6 +16,30 @@ const correctFlash = Duration(milliseconds: 700);
 const passFlash = Duration(milliseconds: 600);
 const timeUpHold = Duration(milliseconds: 1600);
 const pauseHold = Duration(milliseconds: 800);
+const correctDoubleTap = Duration(milliseconds: 80);
+const timeUpThumps = [Duration(milliseconds: 120), Duration(milliseconds: 240)];
+const scoreCountStart = Duration(milliseconds: 320);
+const scoreCountSpan = Duration(milliseconds: 900);
+const scoreCountPerPoint = Duration(milliseconds: 120);
+const scoreCountMaxTicks = 12;
+const scoreLanding = Duration(milliseconds: 100);
+
+const _landing = RoundCue(sound: SoundCue.sparkle, haptic: HapticCue.medium);
+
+RoundCue _urgencyCue(int ms) {
+  if (ms > 5000) {
+    return const RoundCue(sound: SoundCue.urgency, haptic: HapticCue.light);
+  }
+  if (ms > 3000) {
+    return const RoundCue(sound: SoundCue.urgencyFast, haptic: HapticCue.medium);
+  }
+  return const RoundCue(sound: SoundCue.urgencyFast, haptic: HapticCue.heavy);
+}
+
+final _urgencyTicks = <(Duration, RoundCue)>[
+  for (var ms = 10000; ms >= 500; ms -= ms > 5000 ? 1000 : 500)
+    (Duration(milliseconds: ms), _urgencyCue(ms)),
+];
 
 class RoundController extends ChangeNotifier {
   RoundController({
@@ -44,7 +68,6 @@ class RoundController extends ChangeNotifier {
   var _index = 0;
   var _phase = RoundPhase.idle;
   Duration _t = Duration.zero;
-  Duration _countdownStart = Duration.zero;
   Duration _countdownElapsed = Duration.zero;
   Duration _timeLeft = Duration.zero;
   Duration _flashElapsed = Duration.zero;
@@ -52,13 +75,19 @@ class RoundController extends ChangeNotifier {
   Duration? _armSince;
   var _armNoted = false;
   var _got = 0;
-  var _secondThump = false;
   var _pauseHolding = false;
   Duration _pauseHeld = Duration.zero;
   var _endedEarly = false;
+  var _backgrounded = false;
   var _cleared = false;
+  GameCard? _revealed;
+  var _countFired = 0;
+  var _countLanded = false;
+  var _awaitingReady = false;
   final List<RoundMark> marks = [];
   final List<RoundCue> _cues = [];
+  final List<(Duration, RoundCue)> _scheduled = [];
+  Duration _cueClock = Duration.zero;
   double theta = 0;
   double plane = 0;
   DetectorPhase detectorPhase = DetectorPhase.neutral;
@@ -69,10 +98,41 @@ class RoundController extends ChangeNotifier {
   Duration get timeLeft => _timeLeft < Duration.zero ? Duration.zero : _timeLeft;
   Duration get timeUpElapsed => _timeUpElapsed;
   Duration get flashElapsed => _flashElapsed;
+  double get flashProgress {
+    final total = switch (_phase) {
+      RoundPhase.correct => correctFlash,
+      RoundPhase.pass => passFlash,
+      _ => null,
+    };
+    if (total == null) {
+      return 0;
+    }
+    return (_flashElapsed.inMilliseconds / total.inMilliseconds).clamp(0.0, 1.0);
+  }
+  GameCard? get revealed => _revealed;
+  int get shownScore {
+    if (_phase != RoundPhase.timeUp) {
+      return _got;
+    }
+    final ticks = _countTicks;
+    return ticks == 0 ? 0 : (_got * _countFired / ticks).round();
+  }
+
+  int get _countTicks => min(_got, scoreCountMaxTicks);
   bool get deckCleared => _cleared;
   bool get endedEarly => _endedEarly;
   bool get urgent => _phasePlays && timeLeft <= const Duration(seconds: 10);
   bool get urgentFast => _phasePlays && timeLeft <= const Duration(seconds: 5);
+  double get urgencyPulse {
+    if (!urgent) {
+      return 0;
+    }
+    final beats = urgentFast ? 2 : 1;
+    final sinceTick = (1000 - timeLeft.inMilliseconds % 1000) % 1000;
+    final phase = sinceTick * beats % 1000 / 1000;
+    return pow(1 - phase, 2).toDouble();
+  }
+
   bool get _phasePlays =>
       _phase == RoundPhase.card ||
       _phase == RoundPhase.correct ||
@@ -140,11 +200,6 @@ class RoundController extends ChangeNotifier {
     return "TIME'S UP";
   }
 
-  Set<String> get unseenIds {
-    final seen = marks.map((mark) => mark.cardId).toSet();
-    return {for (final card in deck.cards) if (!seen.contains(card.id)) card.id};
-  }
-
   List<RoundCue> drainCues() {
     final drained = List<RoundCue>.of(_cues);
     _cues.clear();
@@ -153,6 +208,10 @@ class RoundController extends ChangeNotifier {
 
   void elapseTo(Duration t) {
     if (t <= _t) {
+      return;
+    }
+    if (_backgrounded) {
+      _t = t;
       return;
     }
     final dt = t - _t;
@@ -166,6 +225,7 @@ class RoundController extends ChangeNotifier {
       elapseTo(sample.at);
     }
     final detect =
+        !_backgrounded &&
         !tapMode &&
         (_phase == RoundPhase.card ||
             _phase == RoundPhase.correct ||
@@ -174,6 +234,9 @@ class RoundController extends ChangeNotifier {
     theta = tick.theta;
     plane = tick.plane;
     detectorPhase = tick.phase;
+    if (_backgrounded) {
+      return;
+    }
     if (_phase == RoundPhase.idle && !tapMode) {
       _trackArm(tick, sample.at);
     } else if (_phase == RoundPhase.countdown && tick.flat) {
@@ -181,6 +244,7 @@ class RoundController extends ChangeNotifier {
     } else if (_phase == RoundPhase.card && tick.fired != null) {
       _fire(tick.fired!);
     }
+    _signalReady();
     notifyListeners();
   }
 
@@ -188,7 +252,7 @@ class RoundController extends ChangeNotifier {
     if (_phase != RoundPhase.idle) {
       return;
     }
-    _enterCountdown();
+    _enterCountdown(const RoundCue(sound: SoundCue.tock, haptic: HapticCue.selection));
     notifyListeners();
   }
 
@@ -219,6 +283,37 @@ class RoundController extends ChangeNotifier {
       return;
     }
     _phase = RoundPhase.card;
+    _detector.requireLevel();
+    notifyListeners();
+  }
+
+  void background() {
+    if (_backgrounded) {
+      return;
+    }
+    _backgrounded = true;
+    _pauseHolding = false;
+    _pauseHeld = Duration.zero;
+    switch (_phase) {
+      case RoundPhase.card:
+        _phase = RoundPhase.paused;
+      case RoundPhase.countdown:
+        _cancelCountdown(cue: false);
+      case RoundPhase.idle:
+        _armSince = null;
+        _armNoted = false;
+      case _:
+        break;
+    }
+    _detector.requireLevel();
+    notifyListeners();
+  }
+
+  void foreground(Duration now) {
+    if (now > _t) {
+      _t = now;
+    }
+    _backgrounded = false;
     notifyListeners();
   }
 
@@ -228,6 +323,9 @@ class RoundController extends ChangeNotifier {
     }
     _endedEarly = true;
     _enterResults();
+    if (_got > 0) {
+      _cues.add(_landing);
+    }
     notifyListeners();
   }
 
@@ -253,31 +351,51 @@ class RoundController extends ChangeNotifier {
       }
     }
     if (_t - _armSince! >= _detector.config.armDwell) {
-      _cues.add(
+      _enterCountdown(
         const RoundCue(sound: SoundCue.whoomp, haptic: HapticCue.medium),
       );
-      _enterCountdown();
     }
   }
 
-  void _enterCountdown() {
+  void _enterCountdown(RoundCue opening) {
     _phase = RoundPhase.countdown;
-    _countdownStart = _t;
     _countdownElapsed = Duration.zero;
     _armSince = null;
-    _cues.add(const RoundCue(sound: SoundCue.tock, haptic: HapticCue.selection));
+    _cues.add(opening);
   }
 
-  void _cancelCountdown() {
+  void _cancelCountdown({bool cue = true}) {
     _phase = RoundPhase.idle;
     _countdownElapsed = Duration.zero;
     _armSince = null;
     _armNoted = false;
     _detector.reset();
-    _cues.add(const RoundCue(sound: SoundCue.tick));
+    if (cue) {
+      _cues.add(const RoundCue(sound: SoundCue.tick));
+    }
+  }
+
+  void _later(Duration delay, RoundCue cue) {
+    _scheduled.add((_cueClock + delay, cue));
+  }
+
+  void _releaseDue() {
+    _scheduled.removeWhere((entry) {
+      if (entry.$1 > _cueClock) {
+        return false;
+      }
+      _cues.add(entry.$2);
+      return true;
+    });
   }
 
   void _advance(Duration dt) {
+    _cueClock += dt;
+    _advancePhase(dt);
+    _releaseDue();
+  }
+
+  void _advancePhase(Duration dt) {
     switch (_phase) {
       case RoundPhase.countdown:
         final before = _countdownElapsed;
@@ -318,10 +436,7 @@ class RoundController extends ChangeNotifier {
         break;
       case RoundPhase.timeUp:
         _timeUpElapsed += dt;
-        if (!_secondThump && _timeUpElapsed >= const Duration(milliseconds: 150)) {
-          _secondThump = true;
-          _cues.add(const RoundCue(haptic: HapticCue.heavy));
-        }
+        _countScore();
         if (_timeUpElapsed >= timeUpHold) {
           _enterResults();
         }
@@ -330,6 +445,24 @@ class RoundController extends ChangeNotifier {
       case RoundPhase.paused:
       case RoundPhase.results:
         break;
+    }
+  }
+
+  void _countScore() {
+    final ticks = _countTicks;
+    final span = Duration(
+      milliseconds: min(scoreCountSpan.inMilliseconds, ticks * scoreCountPerPoint.inMilliseconds),
+    );
+    while (_countFired < ticks &&
+        _timeUpElapsed >= scoreCountStart + span * (_countFired + 1) ~/ ticks) {
+      _countFired += 1;
+      _cues.add(const RoundCue(sound: SoundCue.tick, haptic: HapticCue.light));
+    }
+    if (!_countLanded && _countFired == ticks) {
+      _countLanded = true;
+      if (ticks > 0) {
+        _later(scoreLanding, _landing);
+      }
     }
   }
 
@@ -354,29 +487,9 @@ class RoundController extends ChangeNotifier {
   void _tickClock(Duration dt) {
     final before = _timeLeft;
     _timeLeft -= dt;
-    if (before > const Duration(seconds: 10) &&
-        _timeLeft <= const Duration(seconds: 10) &&
-        _timeLeft > Duration.zero) {
-      // The per-second cues below cover the 10-second mark too.
-    }
-    for (var second = 10; second >= 1; second--) {
-      final mark = Duration(seconds: second);
+    for (final (mark, cue) in _urgencyTicks) {
       if (before > mark && _timeLeft <= mark && _timeLeft > Duration.zero) {
-        if (second >= 6) {
-          _cues.add(
-            const RoundCue(
-              sound: SoundCue.urgency,
-              haptic: HapticCue.selection,
-            ),
-          );
-        } else {
-          _cues.add(
-            const RoundCue(
-              sound: SoundCue.urgencyFast,
-              haptic: HapticCue.light,
-            ),
-          );
-        }
+        _cues.add(cue);
       }
     }
     if (_timeLeft <= Duration.zero) {
@@ -391,8 +504,22 @@ class RoundController extends ChangeNotifier {
     _pauseHolding = false;
     _pauseHeld = Duration.zero;
     if (first) {
+      _awaitingReady = false;
+      _detector.requireLevel();
       _timeLeft = length;
       _cues.add(const RoundCue(sound: SoundCue.shing, haptic: HapticCue.heavy));
+    } else {
+      _signalReady();
+    }
+  }
+
+  void _signalReady() {
+    if (!_awaitingReady || _phase != RoundPhase.card) {
+      return;
+    }
+    if (tapMode || _detector.phase == DetectorPhase.neutral) {
+      _awaitingReady = false;
+      _cues.add(const RoundCue(haptic: HapticCue.selection));
     }
   }
 
@@ -408,21 +535,23 @@ class RoundController extends ChangeNotifier {
         prompt: card.prompt,
         clue: card.clue,
         correct: correct,
-        tMs: (_t - _countdownStart).inMilliseconds,
+        tMs: _t.inMilliseconds,
       ),
     );
     if (correct) {
       _got += 1;
     }
     _phase = correct ? RoundPhase.correct : RoundPhase.pass;
+    _awaitingReady = true;
     _flashElapsed = Duration.zero;
     _pauseHolding = false;
     _pauseHeld = Duration.zero;
-    _cues.add(
-      correct
-          ? const RoundCue(sound: SoundCue.correct, haptic: HapticCue.heavy)
-          : const RoundCue(sound: SoundCue.pass, haptic: HapticCue.medium),
-    );
+    if (correct) {
+      _cues.add(const RoundCue(sound: SoundCue.correct, haptic: HapticCue.heavy));
+      _later(correctDoubleTap, const RoundCue(haptic: HapticCue.medium));
+    } else {
+      _cues.add(const RoundCue(sound: SoundCue.pass, haptic: HapticCue.light));
+    }
   }
 
   void _advanceCard() {
@@ -439,16 +568,22 @@ class RoundController extends ChangeNotifier {
       return;
     }
     _cleared = cleared;
+    _revealed = _phase == RoundPhase.card && _index < _queue.length ? _queue[_index] : null;
     _phase = RoundPhase.timeUp;
     _timeUpElapsed = Duration.zero;
-    _secondThump = false;
+    _countFired = 0;
+    _countLanded = false;
+    _awaitingReady = false;
+    _scheduled.clear();
     _detector.reset();
     _cues.add(const RoundCue(sound: SoundCue.timesUp, haptic: HapticCue.heavy));
+    for (final at in timeUpThumps) {
+      _later(at, const RoundCue(haptic: HapticCue.heavy));
+    }
   }
 
   void _enterResults() {
     _phase = RoundPhase.results;
-    _cues.add(const RoundCue(sound: SoundCue.sparkle, haptic: HapticCue.medium));
   }
 }
 

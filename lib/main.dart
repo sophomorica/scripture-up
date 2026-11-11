@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'app.dart';
 import 'feedback/device_audio.dart';
 import 'feedback/game_haptics.dart';
+import 'feedback/screen_wake.dart';
 import 'game/tilt_sensor.dart';
 import 'recording/camera_round_recorder.dart';
 import 'store/bests.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
       sensor: DeviceTiltSensor(),
       audio: DeviceGameAudio(respectSilence: prefs.respectSilence),
       haptics: DeviceHaptics(),
+      wake: DeviceScreenWake(),
       recorderFactory: CameraRoundRecorder.new,
       prefs: prefs,
     ),

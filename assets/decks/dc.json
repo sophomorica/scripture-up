@@ -1,11 +1,11 @@
 {
   "id": "dc",
   "name": "Doctrine and Covenants",
-  "pitch": "Modern-day revelation, section and verse.",
+  "pitch": "Your team reads the phrase. You name the section and verse. Modern revelation.",
   "heroColor": "#8E2B3A",
   "emblem": "section",
   "format": "reference",
-  "status": "soon",
+  "status": "live",
   "cards": [
     {
       "id": "dc-joseph-smith-history-1-17",

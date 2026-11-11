@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import 'feedback/game_audio.dart';
 import 'feedback/game_haptics.dart';
+import 'feedback/screen_wake.dart';
 import 'game/deck.dart';
 import 'game/tilt_detector.dart';
 import 'game/tilt_sensor.dart';
@@ -27,6 +28,7 @@ class ScriptureUpApp extends StatefulWidget {
     this.sensor,
     this.audio,
     this.haptics,
+    this.wake,
     this.recorderFactory,
     this.clock,
     this.elapsed,
@@ -39,6 +41,7 @@ class ScriptureUpApp extends StatefulWidget {
   final TiltSensor? sensor;
   final GameAudio? audio;
   final GameHaptics? haptics;
+  final ScreenWake? wake;
   final RoundRecorder Function()? recorderFactory;
   final DateTime Function()? clock;
   final Duration Function()? elapsed;
@@ -90,6 +93,7 @@ class _ScriptureUpAppState extends State<ScriptureUpApp> {
               sensor: widget.sensor ?? ScriptedTiltSensor(const Stream.empty()),
               audio: widget.audio ?? SilentAudio(),
               haptics: widget.haptics ?? SilentHaptics(),
+              wake: widget.wake ?? NoScreenWake(),
               recorderFactory: widget.recorderFactory,
               clock: widget.clock,
               elapsed: widget.elapsed,
@@ -107,6 +111,7 @@ class _Table extends StatefulWidget {
     required this.sensor,
     required this.audio,
     required this.haptics,
+    required this.wake,
     required this.recorderFactory,
     required this.clock,
     required this.elapsed,
@@ -119,6 +124,7 @@ class _Table extends StatefulWidget {
   final TiltSensor sensor;
   final GameAudio audio;
   final GameHaptics haptics;
+  final ScreenWake wake;
   final RoundRecorder Function()? recorderFactory;
   final DateTime Function()? clock;
   final Duration Function()? elapsed;
@@ -210,6 +216,7 @@ class _TableState extends State<_Table> {
           sensor: widget.sensor,
           audio: widget.audio,
           haptics: widget.haptics,
+          wake: widget.wake,
           now: _now,
           random: widget.random,
           clock: widget.clock,

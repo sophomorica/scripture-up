@@ -1,5 +1,5 @@
 String formatClock(Duration duration) {
-  final capped = duration.inSeconds.clamp(0, 3599);
+  final capped = ((duration.inMilliseconds + 999) ~/ 1000).clamp(0, 3599);
   final minutes = capped ~/ 60;
   final seconds = capped % 60;
   return '$minutes:${seconds.toString().padLeft(2, '0')}';

@@ -11,7 +11,21 @@ class RoundMark {
   final String prompt;
   final String clue;
   final bool correct;
+
+  /// Milliseconds on the round clock while the round runs, and on the video
+  /// timeline once [onClip] has re-timed it.
   final int tMs;
+
+  RoundMark onClip(Duration origin) {
+    final ms = tMs - origin.inMilliseconds;
+    return RoundMark(
+      cardId: cardId,
+      prompt: prompt,
+      clue: clue,
+      correct: correct,
+      tMs: ms < 0 ? 0 : ms,
+    );
+  }
 
   Map<String, Object?> toJson() => {
     'cardId': cardId,
