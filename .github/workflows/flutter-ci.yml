@@ -5,19 +5,24 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ci:
     name: ci
-    runs-on: ubuntu-latest
+    # Scripture Up ships on iOS only, so CI compiles the iOS app (Swift
+    # AppDelegate channel, Podfile, deployment target). Public repo: macOS
+    # minutes are free. No signing or store upload.
+    runs-on: macos-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -35,10 +40,17 @@ jobs:
       - name: Test
         run: flutter test
 
-      # iOS-only tree; generate Android in CI so ubuntu can prove a compile
-      # without macos-latest. No signing or store upload.
-      - name: Enable Android platform
-        run: flutter create . --platforms=android --project-name scripture_up --org com.narrowroad
+      - name: Build iOS (debug, no codesign)
+        run: flutter build ios --debug --no-codesign
 
-      - name: Build APK
-        run: flutter build apk --debug
+      # Size/bloat gate (nr-hub DECISIONS 2026-11-11 §2): print the Runner.app
+      # size and fail past the budget (first run: 115780 KB). Raise on purpose, not by accident.
+      - name: App size budget
+        run: |
+          app=build/ios/iphoneos/Runner.app
+          kb=$(du -sk "$app" | cut -f1)
+          budget_kb=${APP_BUDGET_KB}
+          echo "Runner.app (debug): ${kb} KB (budget ${budget_kb} KB)"
+          test "$kb" -le "$budget_kb"
+        env:
+          APP_BUDGET_KB: "145000"
