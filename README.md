@@ -14,7 +14,7 @@ From the repo root on a Mac:
 ./scripts/cut_release.sh test ios
 ```
 
-That builds, signs, and uploads to TestFlight. There is no App Store submit lane.
+That builds, signs, and uploads to TestFlight. There is no App Store submit lane. The build number is the latest App Store Connect build + 1 (`BUILD_NUMBER=N` overrides), and the build uses the Flutter version CI pins. Add `--no-upload` to build and sign the .ipa without uploading.
 
 ## Run it on an iPhone
 

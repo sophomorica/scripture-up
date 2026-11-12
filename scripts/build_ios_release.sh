@@ -26,7 +26,9 @@ if ! security show-keychain-info "$LOGIN_KC" </dev/null >/dev/null 2>&1; then
   exit 1
 fi
 
-SAVED_KCS=$(security list-keychains -d user | tr -d '"' | awk 'NF')
+# `security list-keychains` indents each path and quotes it. Strip both, or
+# the restore below turns each entry into a bogus relative keychain path.
+SAVED_KCS=$(security list-keychains -d user | sed -E 's/^[[:space:]]*"?//; s/"?[[:space:]]*$//' | awk 'NF')
 restore_keychains() {
   local args=()
   while IFS= read -r line; do
@@ -42,8 +44,13 @@ security list-keychains -d user -s "$LOGIN_KC" >/dev/null
 VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
 echo "▶ Building scripture_up $VERSION (ipa, release)…"
 
+# Version from pubspec; build number from the fastlane lane (latest ASC + 1).
+build_args=()
+if [ -n "${BUILD_NUMBER:-}" ]; then
+  build_args+=(--build-name="${BUILD_NAME:-${VERSION%%+*}}" --build-number="$BUILD_NUMBER")
+fi
 rm -rf build/ios/ipa
-flutter build ipa --release \
+flutter build ipa --release ${build_args[@]+"${build_args[@]}"} \
   --export-options-plist="$EXPORT_OPTIONS_PLIST"
 
 archive="build/ios/archive/Runner.xcarchive"
@@ -60,4 +67,27 @@ if [ -d "$archive" ] && [ "$archive" -nt "$ipa" ]; then
   exit 1
 fi
 
+
+# Prove what was built: version, build number, and signature.
+verify_dir=$(mktemp -d)
+unzip -q "$ipa" -d "$verify_dir"
+app_dir=$(ls -d "$verify_dir"/Payload/*.app | head -1)
+got_build=$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$app_dir/Info.plist")
+got_name=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$app_dir/Info.plist")
+if [ -n "${BUILD_NUMBER:-}" ] && [ "$got_build" != "$BUILD_NUMBER" ]; then
+  echo "❌ .ipa CFBundleVersion is $got_build, expected $BUILD_NUMBER." >&2
+  rm -rf "$verify_dir"
+  exit 1
+fi
+if ! codesign --verify --deep --strict "$app_dir" 2>/dev/null; then
+  echo "❌ codesign --verify failed on $(basename "$app_dir")." >&2
+  rm -rf "$verify_dir"
+  exit 1
+fi
+# Read all of codesign's output first: grep -m1 in a pipe makes codesign
+# die of SIGPIPE, and pipefail turns that into a silent failure.
+cs_info=$(codesign -dvv "$app_dir" 2>&1 || true)
+signer=$(printf '%s\n' "$cs_info" | sed -n 's/^Authority=//p' | sed -n 1p)
+rm -rf "$verify_dir"
+echo "▶ .ipa: $got_name ($got_build), signed by: $signer"
 echo "✅ Done: $ipa — scripture_up $VERSION"
