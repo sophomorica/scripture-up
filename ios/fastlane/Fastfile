@@ -1,0 +1,106 @@
+# Scripture Up — TestFlight only.
+#
+#   ./scripts/cut_release.sh test ios               # build → sign → TestFlight
+#   ./scripts/cut_release.sh test ios --no-upload   # build → sign, no upload
+#
+# No App Store submit or release lane. Do not add `lane :release`,
+# `deliver`, or `upload_to_app_store` here.
+#
+# Auth: ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_PATH (cut_release.sh loads them
+# from asc-api.env outside the repo; the key is never printed).
+
+REPO_ROOT = File.expand_path("../..", __dir__)
+BUNDLE_ID = "com.narrowroad.scriptureup"
+
+def require_asc_env!
+  missing = %w[ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_PATH].select { |v| ENV[v].to_s.strip.empty? }
+  unless missing.empty?
+    UI.user_error!(<<~MSG)
+      Missing env: #{missing.join(', ')}.
+      Run ./scripts/cut_release.sh test ios — it loads asc-api.env (outside this repo).
+    MSG
+  end
+  key_path = File.expand_path(ENV["ASC_KEY_PATH"])
+  UI.user_error!("ASC_KEY_PATH points to a file that is not on this machine.") unless File.exist?(key_path)
+end
+
+def pubspec_version
+  File.read(File.join(REPO_ROOT, "pubspec.yaml"))[/^version:\s*(\S+)/, 1]
+end
+
+def make_api_key
+  app_store_connect_api_key(
+    key_id: ENV["ASC_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_filepath: File.expand_path(ENV["ASC_KEY_PATH"])
+  )
+end
+
+# Latest build number ASC has for this app (any version) + 1. ASC needs a
+# new build number for every upload, so the pubspec "+N" is only a floor.
+# BUILD_NUMBER=N overrides.
+def next_build_number!(pubspec_build)
+  override = ENV["BUILD_NUMBER"].to_s.strip
+  unless override.empty?
+    UI.user_error!("BUILD_NUMBER must be digits.") unless override.match?(/\A\d+\z/)
+    UI.important("BUILD_NUMBER=#{override} (override; ASC not consulted).")
+    return override.to_i
+  end
+  app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
+  UI.user_error!("No App Store Connect app for #{BUNDLE_ID}.") unless app
+  builds = Spaceship::ConnectAPI.get_builds(
+    filter: { app: app.id },
+    includes: "preReleaseVersion",
+    sort: "-uploadedDate",
+    limit: 200
+  ).to_models
+  latest = builds.map { |b| b.version.to_i }.max || 0
+  n = [latest, pubspec_build.to_i].max + 1
+  UI.message("Latest ASC build for #{BUNDLE_ID}: #{latest}. This build: #{n}.")
+  n
+end
+
+def find_ipa!
+  pointer = File.join(REPO_ROOT, "build", "ios", "ipa_path.txt")
+  if File.exist?(pointer)
+    ipa = File.read(pointer).strip
+    return ipa if File.exist?(ipa)
+  end
+  ipa = Dir[File.join(REPO_ROOT, "build", "ios", "ipa", "*.ipa")].max_by { |f| File.mtime(f) }
+  UI.user_error!("No .ipa under build/ios/ipa/ — did build_ios_release.sh succeed?") unless ipa
+  ipa
+end
+
+def build_ipa!
+  sh("bash", File.join(REPO_ROOT, "scripts", "build_ios_release.sh"))
+  find_ipa!
+end
+
+platform :ios do
+  desc "Build, sign, and upload to TestFlight (NO_UPLOAD=1 stops after signing). Never submits for review."
+  lane :internal do
+    require_asc_env!
+
+    app_version, pubspec_build = pubspec_version.to_s.split("+", 2)
+    api_key = make_api_key
+    build_number = next_build_number!(pubspec_build)
+    ENV["BUILD_NAME"] = app_version
+    ENV["BUILD_NUMBER"] = build_number.to_s
+    no_upload = ENV["NO_UPLOAD"] == "1"
+    ipa = build_ipa!
+
+    if no_upload
+      UI.success("--no-upload: signed #{app_version} (#{build_number}) at #{ipa}. Nothing uploaded.")
+      next
+    end
+
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: ipa,
+      app_identifier: BUNDLE_ID,
+      skip_waiting_for_build_processing: true,
+      changelog: "Internal TestFlight build #{app_version} (#{build_number})."
+    )
+    UI.success("#{app_version} (#{build_number}) uploaded to TestFlight. Not submitted for review.")
+  end
+end

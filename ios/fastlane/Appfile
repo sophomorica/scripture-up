@@ -1,0 +1,5 @@
+# Scripture Up — iOS
+app_identifier("com.narrowroad.scriptureup")
+
+# Auth is the ASC API key (ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_PATH).
+# The .p8 lives outside the repo, in business/narrow-road-keys/.

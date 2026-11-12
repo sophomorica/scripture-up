@@ -6,6 +6,16 @@ The app is free and stores everything on the phone. There are no accounts and no
 
 Version 1.2.0+5 is the doctrinal mastery build. All four books are playable in their own deck data. The lobby opens on Book of Mormon. The picker also offers ALL, OT, NT, and D&C. A canon tile selects that same book. ALL deals the four books together, 100 cards, and does not repeat a card. Old Testament, New Testament, and Book of Mormon have 24 cards each. Doctrine and Covenants has 28. Party decks are visible and not playable yet.
 
+## TestFlight
+
+From the repo root on a Mac:
+
+```bash
+./scripts/cut_release.sh test ios
+```
+
+That builds, signs, and uploads to TestFlight. There is no App Store submit lane. The build number is the latest App Store Connect build + 1 (`BUILD_NUMBER=N` overrides), and the build uses the Flutter version CI pins. Add `--no-upload` to build and sign the .ipa without uploading.
+
 ## Run it on an iPhone
 
 Use a Mac with Xcode and Flutter stable. This project was built with Flutter 3.47.5.
