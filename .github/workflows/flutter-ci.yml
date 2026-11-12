@@ -44,7 +44,7 @@ jobs:
         run: flutter build ios --debug --no-codesign
 
       # Size/bloat gate (nr-hub DECISIONS 2026-11-11 §2): print the Runner.app
-      # size and fail past the budget. Raise the budget on purpose, not by accident.
+      # size and fail past the budget (first run: 115780 KB). Raise on purpose, not by accident.
       - name: App size budget
         run: |
           app=build/ios/iphoneos/Runner.app
@@ -53,4 +53,4 @@ jobs:
           echo "Runner.app (debug): ${kb} KB (budget ${budget_kb} KB)"
           test "$kb" -le "$budget_kb"
         env:
-          APP_BUDGET_KB: "400000"
+          APP_BUDGET_KB: "145000"
