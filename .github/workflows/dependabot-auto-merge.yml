@@ -1,0 +1,39 @@
+name: dependabot-auto-merge
+
+# Minor and patch Dependabot updates merge on their own once the required
+# `ci` check is green (GitHub auto-merge). Major bumps are left open for an
+# independent review. Source: Patrick 11/12 Dependabot limits.
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'sophomorica/scripture-up'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge (minor and patch only)
+        if: steps.meta.outputs.update-type == 'version-update:semver-minor' || steps.meta.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Leave everything else for review
+        if: steps.meta.outputs.update-type != 'version-update:semver-minor' && steps.meta.outputs.update-type != 'version-update:semver-patch'
+        run: |
+          echo "Update type '$UPDATE_TYPE' for $DEPS: not auto-merging. Needs independent review."
+          gh pr merge --disable-auto "$PR_URL" || true
+        env:
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEPS: ${{ steps.meta.outputs.dependency-names }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
