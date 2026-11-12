@@ -10,10 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   audioplayers: ^6.5.1
-  camera: ^0.12.1
+  camera: ^0.12.2
   path_provider: ^2.1.6
-  sensors_plus: ^7.1.0
-  video_player: ^2.14.0
+  sensors_plus: ^7.1.1
+  video_player: ^2.14.1
 
 dev_dependencies:
   flutter_test:
