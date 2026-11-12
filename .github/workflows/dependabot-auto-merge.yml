@@ -27,6 +27,13 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Leave major bumps for review
-        if: steps.meta.outputs.update-type == 'version-update:semver-major'
-        run: echo "Major update (${{ steps.meta.outputs.dependency-names }}); not auto-merging. Needs independent review."
+      - name: Leave everything else for review
+        if: steps.meta.outputs.update-type != 'version-update:semver-minor' && steps.meta.outputs.update-type != 'version-update:semver-patch'
+        run: |
+          echo "Update type '$UPDATE_TYPE' for $DEPS: not auto-merging. Needs independent review."
+          gh pr merge --disable-auto "$PR_URL" || true
+        env:
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEPS: ${{ steps.meta.outputs.dependency-names }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
