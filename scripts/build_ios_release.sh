@@ -39,6 +39,9 @@ restore_keychains() {
   fi
 }
 trap restore_keychains EXIT
+# Ctrl-C / kill: exit so the EXIT trap still restores the list.
+trap 'exit 130' INT
+trap 'exit 143' TERM
 security list-keychains -d user -s "$LOGIN_KC" >/dev/null
 
 VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
