@@ -1,5 +1,6 @@
-# Patrick 11/12: weekly, grouped, at most 3 open Dependabot PRs per repo.
-# open-pull-requests-limit is per ecosystem, so the limits below add up to 3.
+# Patrick 11/13 12:25pm: one grouped weekly Dependabot PR per ecosystem.
+# Each ecosystem has a minor/patch group and a separate major group, so at most
+# 2 open Dependabot PRs per ecosystem (open-pull-requests-limit: 2).
 # Minor/patch auto-merge on green CI (.github/workflows/dependabot-auto-merge.yml).
 # Major bumps never auto-merge; they wait for an independent review.
 version: 2
@@ -14,14 +15,20 @@ updates:
         update-types:
           - minor
           - patch
+      major:
+        update-types:
+          - major
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 1
+    open-pull-requests-limit: 2
     groups:
       minor-and-patch:
         update-types:
           - minor
           - patch
+      major:
+        update-types:
+          - major
