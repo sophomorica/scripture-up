@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../game/deck.dart';
+import '../links/cross_promo.dart';
 import 'draw.dart';
 import 'style.dart';
 
@@ -190,6 +191,7 @@ class AboutSheet extends StatelessWidget {
     required this.onRespectSilence,
     required this.onDebug,
     this.onClose,
+    this.onSidekick,
     this.theta,
     this.phase,
   });
@@ -198,6 +200,9 @@ class AboutSheet extends StatelessWidget {
   final ValueChanged<bool> onRespectSilence;
   final VoidCallback onDebug;
   final VoidCallback? onClose;
+
+  /// Opens the Seminary Sidekick link. Defaults to the browser.
+  final VoidCallback? onSidekick;
   final double? theta;
   final String? phase;
 
@@ -265,8 +270,52 @@ class AboutSheet extends StatelessWidget {
               'Not affiliated with The Church of Jesus Christ of Latter-day Saints.',
               style: body(14, color: cream.withValues(alpha: 0.75)),
             ),
+            const SizedBox(height: 24),
+            SidekickStrip(
+              onTap: onSidekick ?? () => openExternal(sidekickPromoUri),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Cross-promo strip in About: one line on Seminary Sidekick and a button
+/// that opens seminarysidekick.com with the scripture-up UTM tail.
+class SidekickStrip extends StatelessWidget {
+  const SidekickStrip({super.key, required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('sidekick-strip'),
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+      decoration: BoxDecoration(
+        color: navy,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: gold.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('ALSO FROM NARROW ROAD STUDIOS', style: condensed(14, color: gold, tracking: 1.4)),
+          const SizedBox(height: 6),
+          Text('Seminary Sidekick', style: fraunces(26, cream)),
+          const SizedBox(height: 6),
+          Text(
+            'Learn these same 100 passages by heart, a few minutes a day.',
+            style: body(16),
+          ),
+          const SizedBox(height: 14),
+          LineButton(
+            key: const Key('sidekick-open'),
+            label: 'GET SEMINARY SIDEKICK',
+            onPressed: onTap,
+          ),
+        ],
       ),
     );
   }
