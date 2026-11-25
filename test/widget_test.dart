@@ -121,22 +121,8 @@ void main() {
     expect(find.text('Doctrine and Covenants'), findsWidgets);
     expect(find.byKey(const Key('play-hero')), findsOneWidget);
 
-    final people = find.byKey(const Key('deck-people'));
-    for (var i = 0; i < 8 && people.hitTestable().evaluate().isEmpty; i++) {
-      await tester.drag(find.byKey(const Key('lobby-scroll')), const Offset(0, -280));
-      await tester.pump();
-    }
-    expect(
-      find.descendant(of: people, matching: find.text('COMING SOON')),
-      findsOneWidget,
-    );
-    await tester.tap(people);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.textContaining('not live yet'), findsOneWidget);
-    expect(find.textContaining('picker'), findsOneWidget);
-    expect(find.textContaining('Book of Mormon is the one'), findsNothing);
-    expect(find.byKey(const Key('sheet-play')), findsNothing);
+    expect(find.text('COMING SOON'), findsNothing);
+    expect(find.text('PARTY DECKS'), findsNothing);
   });
 
   testWidgets('about keeps the affiliation line and can show tilt', (tester) async {

@@ -140,22 +140,6 @@ class _LobbyScreenState extends State<LobbyScreen> {
                 ],
                 columns: 3,
               ),
-              const SizedBox(height: 22),
-              Row(
-                children: [
-                  Text('PARTY DECKS', style: condensed(13, color: gold, tracking: 2)),
-                  const Spacer(),
-                  Text('next up', style: body(13, color: cream.withValues(alpha: 0.7))),
-                ],
-              ),
-              const SizedBox(height: 10),
-              ..._tileRows(
-                [
-                  for (final deck in _group(partyDeckIds))
-                    _DeckTile(deck: deck, onTap: () => widget.onOpen(deck)),
-                ],
-                columns: 2,
-              ),
             ],
           ),
         ),
