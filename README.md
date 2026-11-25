@@ -44,6 +44,12 @@ The rule is the same on every screen. The team reads the phrase out loud and may
 
 Save copies the clip into the app documents folder at `recordings/`, with a sidecar JSON of the card marks. Open a saved clip from the video button on the lobby. Delete removes that file. The app does not upload it.
 
+About (the ? on the lobby) ends with a Seminary Sidekick strip. Its button opens `https://seminarysidekick.com/` in the browser with `utm_source=scripture-up&utm_medium=promo-strip&utm_campaign=ecosystem-strip&utm_content=sidekick` (hub `standards/LINKS.md`). That link is the only thing in the app that goes to the web.
+
+## App Store
+
+The 1.2.0 listing package is `docs/store/1.2.0-listing.md`. `STORE_SHOTS=1 flutter test test/store/store_screenshots_test.dart` renders the App Store screenshots at 1320 × 2868 (6.9" iPhone) and 2064 × 2752 (13" iPad) into `docs/store/screenshots/`.
+
 ## Recording and tilt
 
 The `camera` package records the front camera at `ResolutionPreset.low`. It requests 24 fps and an 800 kbps video bitrate. If the phone rejects those settings, it records again at the same low resolution with the platform defaults. `sensors_plus` reads the accelerometer.
