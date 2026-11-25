@@ -79,28 +79,19 @@ void main() {
   testWidgets('the lobby lays out without overflow at 320 wide with text scale 2.0', (tester) async {
     await pumpLobby(tester, width: 320, textScale: 2);
     expect(tester.takeException(), isNull);
-    expect(find.byKey(const Key('deck-hard')), findsOneWidget);
+    expect(find.byKey(const Key('deck-dc')), findsOneWidget);
     expect(find.byKey(const Key('length-90')), findsOneWidget);
   });
 
-  testWidgets('party tiles say coming soon, canon tiles keep their card count', (tester) async {
+  testWidgets('the lobby shows the canon only, with card counts and no coming-soon tiles', (tester) async {
     await pumpLobby(tester, width: 390);
     final decks = loadDecks();
-    expect(find.text('PARTY DECKS'), findsOneWidget);
-    expect(find.text('next up'), findsOneWidget);
-    expect(find.text('new'), findsNothing);
-    for (final id in partyDeckIds) {
-      expect(decks.singleWhere((deck) => deck.id == id).playable, isFalse, reason: id);
-      expect(inTile(id, find.text('COMING SOON')), findsOneWidget, reason: id);
-      expect(inTile(id, find.textContaining('CARDS')), findsNothing, reason: id);
-      expect(inTile(id, find.text('NEW')), findsNothing, reason: id);
-      expect(inTile(id, find.byType(Hatch)), findsOneWidget, reason: id);
-    }
+    expect(find.text('PARTY DECKS'), findsNothing);
+    expect(find.text('COMING SOON'), findsNothing);
+    expect(find.byType(Hatch), findsNothing);
     for (final id in canonDeckIds) {
       final cards = decks.singleWhere((deck) => deck.id == id).cardCount;
       expect(inTile(id, find.text('$cards CARDS')), findsOneWidget, reason: id);
-      expect(inTile(id, find.text('COMING SOON')), findsNothing, reason: id);
-      expect(inTile(id, find.byType(Hatch)), findsNothing, reason: id);
     }
   });
 }

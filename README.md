@@ -4,7 +4,7 @@ Scripture Up is a forehead party game from Narrow Road Studios. One player holds
 
 The app is free and stores everything on the phone. There are no accounts and no purchases. The lobby is portrait. The round, from the forehead prompt through results, is landscape. The bundle id is `com.narrowroad.scriptureup`. The deployment target is iOS 15, so it runs on iPhone 12 and newer.
 
-Version 1.2.0+5 is the doctrinal mastery build. All four books are playable in their own deck data. The lobby opens on Book of Mormon. The picker also offers ALL, OT, NT, and D&C. A canon tile selects that same book. ALL deals the four books together, 100 cards, and does not repeat a card. Old Testament, New Testament, and Book of Mormon have 24 cards each. Doctrine and Covenants has 28. Party decks are visible and not playable yet.
+Version 1.2.0+5 is the doctrinal mastery build. All four books are playable in their own deck data. The lobby opens on Book of Mormon. The picker also offers ALL, OT, NT, and D&C. A canon tile selects that same book. ALL deals the four books together, 100 cards, and does not repeat a card. Old Testament, New Testament, and Book of Mormon have 24 cards each. Doctrine and Covenants has 28. The lobby shows the four books only; the party decks are hidden until they can be played.
 
 ## TestFlight
 
